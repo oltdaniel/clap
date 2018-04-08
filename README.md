@@ -33,9 +33,9 @@ Here some descriptions to the single parts of the machine:
 
 - [Description](https://github.com/oltdaniel/clap/blob/master/doc/description.md)
 - [Architecture](https://github.com/oltdaniel/clap/blob/master/doc/architecture.md)
-- [Instructions](https://github.com/oltdaniel/clap/blob/master/instructions.md)
-- [Examples](https://github.com/oltdaniel/clap/blob/master/examples.md)
-- [Tutorial](https://github.com/oltdaniel/clap/blob/master/tutorial.md)
+- [Instructions](https://github.com/oltdaniel/clap/blob/master/doc/instructions.md)
+- [Examples](https://github.com/oltdaniel/clap/blob/master/doc/examples.md)
+- [Tutorial](https://github.com/oltdaniel/clap/blob/master/doc/tutorial.md)
 
 ## About
 
