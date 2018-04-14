@@ -42,15 +42,33 @@ int main(int argc, char* argv[]) {
   }
 
   /*
+   * Require an extra argument
+   */
+  // Require 3 arguments (clap + [command] + [file])
+  if(argc < 3) {
+    // Print error message
+    printf("Please provide an file to execute.\n");
+
+    // Exit with error code
+    return EX_CLI;
+  }
+
+  // Read file argument
+  char* file = argv[2];
+
+  /*
    * Read machine arguments
    */
   // Check for run command
   if(strcmp(command, "run") == 0) {
     // Initialize new machine
+    struct machine_s* m = machine_new();
 
     // Load program
+    int status = machine_load(m, file);
 
     // Run machine
+    machine_run(m);
 
     // Exit with success code
     return EX_OKA;

@@ -1,1 +1,1 @@
-; Add to numbers
+; Add two numbers
