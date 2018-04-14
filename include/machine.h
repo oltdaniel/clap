@@ -6,6 +6,7 @@
 
 #include "info.h"
 #include "helpers.h"
+#include "compiler.h"
 
 // The machine struct
 struct machine_s {

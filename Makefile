@@ -1,6 +1,6 @@
 # Define compiler options
 CC := clang
-CFLAGS := -g
+CFLAGS := -g -std=c99 -pedantic
 LIB :=
 INC := -I include
 
