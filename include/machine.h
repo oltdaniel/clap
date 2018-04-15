@@ -14,15 +14,15 @@ struct machine_s {
   uint64_t* registers;
 
   // Memory
-  void* memory;
+  char* memory;
 
   // Pointers
-  void* ip;
-  void* sp;
-  void* ap;
+  char ip;
+  char sp;
+  char ap;
 
   // Flags
-  char* flags;
+  char flags;
 
   // Status
   int running;

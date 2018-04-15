@@ -8,15 +8,7 @@ struct machine_s* machine_new() {
   m->registers = hmalloc(sizeof(uint64_t) * 20);
 
   // Allocate memory
-  m->memory = hmalloc(sizeof(char) * 1024);
-
-  // Reset pointers
-  m->ip = NULL;
-  m->sp = NULL;
-  m->ap = NULL;
-
-  // Allocate flags
-  m->flags = hmalloc(sizeof(char));
+  m->memory = hmalloc(1024);
 
   // Set status
   m->running = 0;
@@ -42,22 +34,16 @@ int machine_load(struct machine_s* m, char* file) {
   fseek(codep, 0, SEEK_END);
 
   // Read position (filesize)
-  size_t sz = ftell(codep);
+  long int sz = ftell(codep);
 
   // Reset file position
   fseek(codep, 0, SEEK_SET);
 
-  // Allocate buffer
-  char* buffer = hmalloc(sizeof(char) * sz);
+  // Allocate buffer + null terminator
+  char* buffer = hmalloc(sz + 1);
 
   // Read file content
-  if(fgets(buffer, sz, codep) == NULL) {
-    // Print error message
-    printf("Could not read file.\n");
-
-    // Exit with error code
-    exit(EX_FAL);
-  }
+  fread(buffer, sz, 1, codep);
 
   // Compile the assembly code and store in machine memeory
   int status = compiler_run(m->memory, buffer);
