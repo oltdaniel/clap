@@ -54,10 +54,10 @@ int machine_load(struct machine_s* m, char* file) {
 
 void machine_run(struct machine_s* m) {
   // Update status
-  m->running = 1;
+  m->running = true;
 
   // Execute code
 
   // Update status
-  m->running = 0;
+  m->running = false;
 }

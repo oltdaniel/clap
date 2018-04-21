@@ -17,15 +17,15 @@ struct machine_s {
   char* memory;
 
   // Pointers
-  char ip;
-  char sp;
-  char ap;
+  uint32_t ip;
+  uint32_t sp;
+  uint32_t ap;
 
   // Flags
   char flags;
 
   // Status
-  int running;
+  bool running;
 };
 
 // The index numbers of the flags

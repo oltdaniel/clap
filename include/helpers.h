@@ -6,6 +6,13 @@
 
 #include "info.h"
 
+// Set bool as alias for int
+#define bool int
+
+// Define bool values
+#define true 1
+#define false 0
+
 void* hmalloc(size_t);
 
 #endif
