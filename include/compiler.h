@@ -16,6 +16,10 @@ enum {
   INS_NOOP,
   INS_HALT,
 
+  INS_ALLO,
+  INS_POPE,
+  INS_PUSH,
+
   INS_JUMZ,
   INS_JUMP,
 

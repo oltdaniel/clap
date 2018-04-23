@@ -179,8 +179,53 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
   else if(parameter_two[0] == '#') parameter_twot = PAR_VALUE;
 
   // Validate parameter combination
-  // TODO: Validate parameter types
-  if(0) {
+  // (Not simplified yet, because this could be changed over time)
+  if(
+    // Validate allo instruction parameters
+    !(inst == INS_ALLO && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER)
+                      && (parameter_twot == PAR_ADDRESS
+                           || parameter_twot == PAR_REGISTER
+                           || parameter_twot == PAR_VALUE))
+    && // Validate pope instruction parameters
+    !(inst == INS_POPE && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER))
+    && // Validate push instruction parameters
+    !(inst == INS_PUSH && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_VALUE))
+    && // Validate jumz instruction parameters
+    !(inst == INS_JUMZ && (parameter_onet == PAR_NAME))
+    && // Validate jump instruction parameters
+    !(inst == INS_JUMP && (parameter_onet == PAR_NAME))
+    && // Validate cmpz instruction parameters
+    !(inst == INS_CMPZ && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_VALUE))
+    && // Validate movz instruction parameters
+    !(inst == INS_MOVZ && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER))
+    && // Validate move instruction parameters
+    !(inst == INS_MOVE && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER)
+                       && (parameter_twot == PAR_ADDRESS
+                           || parameter_twot == PAR_REGISTER
+                           || parameter_twot == PAR_VALUE))
+    && // Validate subi instruction parameters
+    !(inst == INS_SUBI && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_VALUE)
+                       && (parameter_twot == PAR_ADDRESS
+                           || parameter_twot == PAR_REGISTER
+                           || parameter_twot == PAR_VALUE))
+    && // Validate addi instruction parameters
+    !(inst == INS_ADDI && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_VALUE)
+                       && (parameter_twot == PAR_ADDRESS
+                           || parameter_twot == PAR_REGISTER
+                           || parameter_twot == PAR_VALUE))
+  ) {
     // Print error message
     printf("Wrong parameter types given.\n");
 
