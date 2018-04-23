@@ -3,13 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "info.h"
 #include "helpers.h"
 #include "machine.h"
 
-// Instructíon ids
+// Instruction ids
 enum {
   INS_UNKNOWN,
 
@@ -44,5 +45,6 @@ enum {
 
 int compiler_run(char*, char*);
 void compiler_parameters(char*, char*, unsigned int*, unsigned int*, int);
+void compiler_store_parameter(char*, unsigned int*, char*, int);
 
 #endif

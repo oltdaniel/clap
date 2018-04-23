@@ -1,3 +1,4 @@
 ; Add two numbers
-move r00 #12
-addi r00 #2
+move r18 #12
+addi r19 #2
+halt

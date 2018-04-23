@@ -1,5 +1,58 @@
 #include "compiler.h"
 
+// Debug helper NOTE: Remove later
+void hexDump (char *desc, void *addr, int len) {
+    int i;
+    unsigned char buff[17];
+    unsigned char *pc = (unsigned char*)addr;
+
+    // Output description if given.
+    if (desc != NULL)
+        printf ("%s:\n", desc);
+
+    if (len == 0) {
+        printf("  ZERO LENGTH\n");
+        return;
+    }
+    if (len < 0) {
+        printf("  NEGATIVE LENGTH: %i\n",len);
+        return;
+    }
+
+    // Process every byte in the data.
+    for (i = 0; i < len; i++) {
+        // Multiple of 16 means new line (with line offset).
+
+        if ((i % 16) == 0) {
+            // Just don't print ASCII for the zeroth line.
+            if (i != 0)
+                printf ("  %s\n", buff);
+
+            // Output the offset.
+            printf ("  %04x ", i);
+        }
+
+        // Now the hex code for the specific character.
+        printf (" %02x", pc[i]);
+
+        // And store a printable ASCII character for later.
+        if ((pc[i] < 0x20) || (pc[i] > 0x7e))
+            buff[i % 16] = '.';
+        else
+            buff[i % 16] = pc[i];
+        buff[(i % 16) + 1] = '\0';
+    }
+
+    // Pad out last line if not exactly 16 characters.
+    while ((i % 16) != 0) {
+        printf ("   ");
+        i++;
+    }
+
+    // And print the final ASCII bit.
+    printf ("  %s\n", buff);
+}
+
 int compiler_run(char* m, char* buffer) {
   // Remember current position in the buffer
   unsigned int current = 0;
@@ -70,6 +123,9 @@ int compiler_run(char* m, char* buffer) {
 
     // Read parameters
     compiler_parameters(m, buffer, &current, &ccurrent, inst);
+
+    // Debug message NOTE: Remove later
+    hexDump("memory", m, ccurrent);
   }
 
   // Return success code
@@ -233,5 +289,63 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
     exit(EX_FAL);
   }
 
-  // TODO: Store parameter with union type
+  // Store the parameters in the memory
+  compiler_store_parameter(m, ccurrent, parameter_one, parameter_onet);
+  compiler_store_parameter(m, ccurrent, parameter_two, parameter_twot);
+}
+
+void compiler_store_parameter(char* m, unsigned int* ccurrent, char* parameter, int parametert) {
+  // Declare some remember variables
+  // Remember pointer to allocated parameter content memory
+  void* parameterc = NULL;
+
+  // Remmeber content length of parameter
+  unsigned int parametercl = 0;
+
+  // Check for register parameter type
+  if(parametert == PAR_REGISTER) {
+    // Ignore first character
+    parameter++;
+
+    // Allocate space
+    uint8_t* c = hmalloc(1);
+
+    // Translate memory to integer
+    *c = atoi(parameter);
+
+    // Update content pointer
+    parameterc = c;
+
+    // Update parameter length
+    parametercl = 1;
+
+  // Check for value parameter type
+  } else if(parametert == PAR_VALUE) {
+    // Ignore first character
+    parameter++;
+
+    // Allocate space
+    uint64_t* c = hmalloc(8);
+
+    // Translate memory to integer
+    *c = atoll(parameter);
+
+    // Update content pointer
+    parameterc = c;
+
+    // Update parameter length
+    parametercl = 8;
+  }
+
+  // If no content needs to be written NOTE: Remove when every parameter is implemented
+  if(parameterc == NULL) return;
+
+  // Store parameter head
+  m[(*ccurrent)++] = (uint8_t)parametert;
+
+  // Copy parameter content to the memory
+  memcpy(m + *ccurrent, parameterc, parametercl);
+
+  // Update memory position
+  *ccurrent += parametercl;
 }
