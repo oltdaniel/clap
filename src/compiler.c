@@ -53,6 +53,9 @@ int compiler_run(char* m, char* buffer) {
     // Recognize instruction
     if(strcmp(ins, "halt") == 0) inst = INS_HALT;
     else if(strcmp(ins, "noop") == 0) inst = INS_NOOP;
+    else if(strcmp(ins, "allo") == 0) inst = INS_ALLO;
+    else if(strcmp(ins, "pope") == 0) inst = INS_POPE;
+    else if(strcmp(ins, "push") == 0) inst = INS_PUSH;
     else if(strcmp(ins, "jumz") == 0) inst = INS_JUMZ;
     else if(strcmp(ins, "jump") == 0) inst = INS_JUMP;
     else if(strcmp(ins, "cmpz") == 0) inst = INS_CMPZ;
@@ -134,9 +137,15 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
     plength++;
   }
 
+  // Decremt position
+  (*current)--;
+
   // Validate parameter count
   if((inst == INS_HALT && parameter != 0)
      || (inst == INS_NOOP && parameter != 0)
+     || (inst == INS_ALLO && parameter != 2)
+     || (inst == INS_POPE && parameter != 1)
+     || (inst == INS_PUSH && parameter != 1)
      || (inst == INS_JUMZ && parameter != 1)
      || (inst == INS_JUMP && parameter != 1)
      || (inst == INS_CMPZ && parameter != 1)
@@ -179,8 +188,5 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
     exit(EX_FAL);
   }
 
-  // TODO: Store parameter with inion type
-
-  // Decremt position
-  (*current)--;
+  // TODO: Store parameter with union type
 }

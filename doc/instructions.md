@@ -58,7 +58,7 @@ recognizable by the compiler.
 ; Gives the address an alias `loop`
 
 .name exit
-; Gives the address an laias `exit`
+; Gives the address an alias `exit`
 ```
 
 ##### `var`
@@ -84,6 +84,9 @@ a space if they are used.
 | `cmpz` | address/register/value | Checks if the value of the parameter is zero, if true set the zero flag |
 | `jump` | name | Jumps to an spcified label |
 | `jumz` | name | Jumps if the zero flag is activated |
+| `push` | address/register/value | Push an element to the stack |
+| `pope` | address/register | Pops an element from the stack into the destination |
+| `allo` | address/register, address/register/value | Allocates x bytes (second parameter) and stores the address into the first parameter |
 | `noop` | _none_ | Cosumes an cpu cycle like a sleep function |
 | `halt` | _none_ | Stops the machine from running |
 
