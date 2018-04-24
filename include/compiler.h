@@ -43,8 +43,23 @@ enum {
   PAR_VALUE,
 };
 
+// Label type ids
+enum {
+  LAB_UNKNOWN,
+  LAB_ORG,
+  LAB_NAM,
+  LAB_VAR,
+};
+
+// Store an address alias
+struct label_s {
+  char* name;
+  uint32_t address;
+};
+
 int compiler_run(char*, char*);
 void compiler_parameters(char*, char*, uint32_t*, uint32_t*, int);
 void compiler_store_parameter(char*, uint32_t*, char*, int);
+void compiler_label(char*, char*, uint32_t*, uint32_t*, int, void*, unsigned int*, unsigned int*);
 
 #endif

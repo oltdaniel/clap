@@ -66,6 +66,18 @@ int compiler_run(char* m, char* buffer) {
   // Store the last instruction
   char* ins = hmalloc(4);
 
+  // Store the last label
+  char* lab = hmalloc(3);
+
+  // Store the found address aliases
+  void* labels = hmalloc(sizeof(struct label_s) * 10);
+
+  // Store how many labels have been stored
+  unsigned int labelsc = 0;
+
+  // Store how many labels are allocated
+  unsigned int labelss = 10;
+
   // Loop through the buffer
   while(1) {
     // Read next char of buffer
@@ -93,19 +105,22 @@ int compiler_run(char* m, char* buffer) {
 
     // Check for label trigger
     } else if(c == '.') {
-      // TODO: Check for labels
-      // NOTE: Ignore labels only for now
+      // Copy label from buffer
+      strncpy(lab, buffer + current, 3);
 
-      // Loop to the line end
-      while(c != '\n') {
-        // Read next char from buffer
-        c = buffer[current++];
+      // Check for end of file
+      if(lab[2] == 0) break;
 
-        // Check for null terminator
-        if(c == 0) break;
-      }
+      // Remember label type
+      int labelt = LAB_UNKNOWN;
 
-      current--;
+      // Identify label type
+      if(strcmp(lab, "org") == 0) labelt = LAB_ORG;
+      else if(strcmp(lab, "nam") == 0) labelt = LAB_NAM;
+      else if(strcmp(lab, "var") == 0) labelt = LAB_VAR;
+
+      // Store the labels
+      compiler_label(m, buffer, &current, &ccurrent, labelt, labels, &labelsc, &labelss);
 
       // Jump to next round
       continue;
@@ -283,9 +298,11 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
                            || parameter_onet == PAR_REGISTER
                            || parameter_onet == PAR_VALUE))
     && // Validate jumz instruction parameters
-    !(inst == INS_JUMZ && (parameter_onet == PAR_NAME))
+    !(inst == INS_JUMZ && (parameter_onet == PAR_NAME
+                           || parameter_onet == PAR_ADDRESS))
     && // Validate jump instruction parameters
-    !(inst == INS_JUMP && (parameter_onet == PAR_NAME))
+    !(inst == INS_JUMP && (parameter_onet == PAR_NAME
+                           || parameter_onet == PAR_ADDRESS))
     && // Validate cmpz instruction parameters
     !(inst == INS_CMPZ && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
@@ -366,7 +383,8 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
 
     // Check for hex format
     if(parameter[0] == 'x') {
-      // TODO: Hex to uint64
+      // Translate memory to integer
+      *c = strtoll(parameter + 1, NULL, 16);
     } else {
       // Translate memory to integer
       *c = atoll(parameter);
@@ -388,7 +406,8 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
 
     // Check for hex format
     if(parameter[0] == 'x') {
-      // TODO: Hex to uint64
+      // Translate memory to integer
+      *c = strtol(parameter + 1, NULL, 16);
     } else {
       // Translate memory to integer
       *c = atol(parameter);
@@ -412,4 +431,23 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
 
   // Update memory position
   *ccurrent += parametercl;
+}
+
+void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, int labt, void* labels, unsigned int* labelsc, unsigned int* labelss) {
+  // NOTE: Ignore labels for now
+
+  // Store current char
+  char c;
+
+  // Loop to the line end
+  while(c != '\n') {
+    // Read next char from buffer
+    c = buffer[(*current)++];
+
+    // Check for null terminator
+    if(c == 0) break;
+  }
+
+  // Decrement position
+  (*current)--;
 }

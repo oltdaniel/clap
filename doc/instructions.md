@@ -51,13 +51,13 @@ recognizable by the compiler.
 ; The current memory address for the code is 0x512
 ```
 
-##### `name`
+##### `nam`
 
 ```assembly
-.name loop
+.nam loop
 ; Gives the address an alias `loop`
 
-.name exit
+.nam exit
 ; Gives the address an alias `exit`
 ```
 
