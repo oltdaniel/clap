@@ -26,7 +26,7 @@ address spaces it needs to fit in.
 #### Heap
 
 The heap starts at the lowest memory address after the code memory. This
-positon allows allocating more code memory and add instructions during the
+position allows allocating more code memory and add instructions during the
 runtime.
 
 #### Stack
@@ -38,7 +38,7 @@ top of the memory address spaces. Each item has a fixed size of `8bytes`.
 
 The machine uses an instruction pointer `ip` in order to track the current
 instruction that will be executed, an stack pointer `sp` to keep track of the
-current poisiton in the stack and an allocation pointer `ap` to keep track of
+current position in the stack and an allocation pointer `ap` to keep track of
 the next address the next memory space in the heap will be allocated.
 
 ## Flags

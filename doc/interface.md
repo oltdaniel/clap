@@ -31,7 +31,7 @@ level doesn't give the developer access to the memory viewer or register overvie
 #### 1: Extended
 
 The extended logging level opens an debugger interface with its own set of
-commands. It allows the developer to debug through ech step of the insructions
+commands. It allows the developer to debug through each step of the instructions
 and view the different memory areas as well as the register overview.
 
 #### 2: Pro

@@ -44,7 +44,7 @@ enum {
 };
 
 int compiler_run(char*, char*);
-void compiler_parameters(char*, char*, unsigned int*, unsigned int*, int);
-void compiler_store_parameter(char*, unsigned int*, char*, int);
+void compiler_parameters(char*, char*, uint32_t*, uint32_t*, int);
+void compiler_store_parameter(char*, uint32_t*, char*, int);
 
 #endif

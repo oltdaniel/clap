@@ -9,7 +9,7 @@ the existing ones, but with some decisive changes.
 ##### address
 
 An address can be recognized by the `@` followed by an address written in
-hexadecimal. **Example**: `@0x123`
+hexadecimal. **Example**: `@x123`
 
 ##### register
 
@@ -26,7 +26,7 @@ avoid compiler errors. **Example**: `nameThis`
 ##### value
 
 An value is recognized by an `#` followed by the actual value. This value needs
-to be decimal or hexadecimal. **Example**: `#123` or `#0x7B`
+to be decimal or hexadecimal. **Example**: `#123` or `#x7B`
 
 ### Labels
 
@@ -37,17 +37,17 @@ recognizable by the compiler.
 
 | Name | Parameters | Description |
 |-|-|-|
-| `org` | address | Changes the currnt position in the memory of the code |
+| `org` | address | Changes the current position in the memory of the code |
 | `name` | name | Gives the current memory address a name to allow jumps |
 | `var` | name, value | Puts the value at the current memory address with the specific name |
 
 ##### `org`
 
 ```assembly
-.org 0x0
+.org x0
 ; The current memory address for the code is 0x0
 
-.org 0x512
+.org x512
 ; The current memory address for the code is 0x512
 ```
 
@@ -82,12 +82,12 @@ a space if they are used.
 | `movz` | address/register | Clears the first parameter value |
 | `flaz` | _none_ | Clears all flags to the default state |
 | `cmpz` | address/register/value | Checks if the value of the parameter is zero, if true set the zero flag |
-| `jump` | name | Jumps to an spcified label |
+| `jump` | name | Jumps to an specified label |
 | `jumz` | name | Jumps if the zero flag is activated |
 | `push` | address/register/value | Push an element to the stack |
 | `pope` | address/register | Pops an element from the stack into the destination |
 | `allo` | address/register, address/register/value | Allocates x bytes (second parameter) and stores the address into the first parameter |
-| `noop` | _none_ | Cosumes an cpu cycle like a sleep function |
+| `noop` | _none_ | Consumes an cpu cycle like a sleep function |
 | `halt` | _none_ | Stops the machine from running |
 
 ###### **TODO**: Add more instructions

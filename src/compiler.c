@@ -55,10 +55,10 @@ void hexDump (char *desc, void *addr, int len) {
 
 int compiler_run(char* m, char* buffer) {
   // Remember current position in the buffer
-  unsigned int current = 0;
+  uint32_t current = 0;
 
   // Rememeber current position in the code memory
-  unsigned int ccurrent = 0;
+  uint32_t ccurrent = 0;
 
   // Store current character
   char c = 0;
@@ -90,15 +90,40 @@ int compiler_run(char* m, char* buffer) {
 
       // Jump to next round
       continue;
+
+    // Check for label trigger
+    } else if(c == '.') {
+      // TODO: Check for labels
+      // NOTE: Ignore labels only for now
+
+      // Loop to the line end
+      while(c != '\n') {
+        // Read next char from buffer
+        c = buffer[current++];
+
+        // Check for null terminator
+        if(c == 0) break;
+      }
+
+      current--;
+
+      // Jump to next round
+      continue;
+
+    // Check for new line
+    } else if(c == '\n') {
+      // Ignore new line
+      continue;
     }
 
-    // TODO: Check for labels
-
     // Get next instruction
-    strncpy(ins, buffer + current, 4);
+    strncpy(ins, buffer + current - 1, 4);
 
     // Update current position
     current += 4;
+
+    // Check for file end
+    if(ins[3] == 0) break;
 
     // Store the instruction type
     int inst = INS_UNKNOWN;
@@ -118,6 +143,15 @@ int compiler_run(char* m, char* buffer) {
     else if(strcmp(ins, "subi") == 0) inst = INS_SUBI;
     else if(strcmp(ins, "addi") == 0) inst = INS_ADDI;
 
+    // Check for unknown instruction
+    if(inst == INS_UNKNOWN) {
+      // Print error message
+      printf("Sorry, the instruction `%s` is not defined.\n", ins);
+
+      // Exit with error code
+      exit(EX_FAL);
+    }
+
     // Add instruction to memory
     m[ccurrent++] = inst;
 
@@ -132,7 +166,7 @@ int compiler_run(char* m, char* buffer) {
   return EX_OKA;
 }
 
-void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned int* ccurrent, int inst) {
+void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, int inst) {
   // Ingore unknown instructions
   if(inst == 0) return;
 
@@ -150,18 +184,18 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
   char* parameter_two = NULL;
 
   // Ingore first whitespace
-  (*current)++;
+  if(buffer[*current] == ' ') (*current)++;
 
   // Read parameters
-  while(1) {
+  while(c != '\n') {
     // Read next character from buffer
     c = buffer[(*current)++];
 
     // Check for null terminator
     if(c == 0) break;
 
-    // Check for space
-    if(c == ' ') {
+    // Check for space or first&last parameter
+    if(c == ' ' || (parameter == 0 && c == '\n')) {
       // Update parameter count
       parameter++;
 
@@ -173,7 +207,6 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
 
       // Reset and new parameter round
       plength = 0;
-      continue;
     } else if(c == '\n') {
       // Update parameter count
       parameter++;
@@ -186,15 +219,11 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
 
       // Reset and break reading
       plength = 0;
-      break;
+    } else {
+      // Increment parameter length
+      plength++;
     }
-
-    // Increment parameter length
-    plength++;
   }
-
-  // Decremt position
-  (*current)--;
 
   // Validate parameter count
   if((inst == INS_HALT && parameter != 0)
@@ -229,10 +258,13 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
   else if(parameter_one[0] == '@') parameter_onet = PAR_ADDRESS;
   else if(parameter_one[0] == '#') parameter_onet = PAR_VALUE;
 
-  // Recognize parameter two type
-  if(parameter_two[0] == 'r') parameter_twot = PAR_REGISTER;
-  else if(parameter_two[0] == '@') parameter_twot = PAR_ADDRESS;
-  else if(parameter_two[0] == '#') parameter_twot = PAR_VALUE;
+  // Check if parameter two exists
+  if(parameter_two != NULL) {
+    // Recognize parameter two type
+    if(parameter_two[0] == 'r') parameter_twot = PAR_REGISTER;
+    else if(parameter_two[0] == '@') parameter_twot = PAR_ADDRESS;
+    else if(parameter_two[0] == '#') parameter_twot = PAR_VALUE;
+  }
 
   // Validate parameter combination
   // (Not simplified yet, because this could be changed over time)
@@ -289,12 +321,17 @@ void compiler_parameters(char* m, char* buffer, unsigned int* current, unsigned 
     exit(EX_FAL);
   }
 
-  // Store the parameters in the memory
+  // Store parameter 1 in the memory
   compiler_store_parameter(m, ccurrent, parameter_one, parameter_onet);
-  compiler_store_parameter(m, ccurrent, parameter_two, parameter_twot);
+
+  // Check if parameter 2 exists
+  if(parameter_two != NULL) {
+    // Store parameter 2 in the memory
+    compiler_store_parameter(m, ccurrent, parameter_two, parameter_twot);
+  }
 }
 
-void compiler_store_parameter(char* m, unsigned int* ccurrent, char* parameter, int parametert) {
+void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int parametert) {
   // Declare some remember variables
   // Remember pointer to allocated parameter content memory
   void* parameterc = NULL;
@@ -327,14 +364,41 @@ void compiler_store_parameter(char* m, unsigned int* ccurrent, char* parameter, 
     // Allocate space
     uint64_t* c = hmalloc(8);
 
-    // Translate memory to integer
-    *c = atoll(parameter);
+    // Check for hex format
+    if(parameter[0] == 'x') {
+      // TODO: Hex to uint64
+    } else {
+      // Translate memory to integer
+      *c = atoll(parameter);
+    }
 
     // Update content pointer
     parameterc = c;
 
     // Update parameter length
     parametercl = 8;
+
+  // Check for address parameter type
+  } else if(parametert == PAR_ADDRESS) {
+    // Ignore first character
+    parameter++;
+
+    // Allocate space
+    uint32_t* c = hmalloc(4);
+
+    // Check for hex format
+    if(parameter[0] == 'x') {
+      // TODO: Hex to uint64
+    } else {
+      // Translate memory to integer
+      *c = atol(parameter);
+    }
+
+    // Update current pointer
+    parameterc = c;
+
+    // Update parameter length
+    parametercl = 4;
   }
 
   // If no content needs to be written NOTE: Remove when every parameter is implemented
