@@ -183,7 +183,7 @@ int compiler_run(char* m, char* buffer) {
     m[ccurrent++] = inst;
 
     // Read parameters
-    compiler_parameters(m, buffer, &current, &ccurrent, inst);
+    compiler_parameters(m, buffer, &current, &ccurrent, inst, labels, labelsc);
 
     // Debug message NOTE: Remove later
     hexDump("memory", m, ccurrent);
@@ -196,7 +196,7 @@ int compiler_run(char* m, char* buffer) {
   return EX_OKA;
 }
 
-void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, int inst) {
+void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, int inst, struct label_s* labels, unsigned int labelsc) {
   // Ingore unknown instructions
   if(inst == 0) return;
 
@@ -354,16 +354,16 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
   }
 
   // Store parameter 1 in the memory
-  compiler_store_parameter(m, ccurrent, parameter_one, parameter_onet);
+  compiler_store_parameter(m, ccurrent, parameter_one, parameter_onet, labels, labelsc);
 
   // Check if parameter 2 exists
   if(parameter_two != NULL) {
     // Store parameter 2 in the memory
-    compiler_store_parameter(m, ccurrent, parameter_two, parameter_twot);
+    compiler_store_parameter(m, ccurrent, parameter_two, parameter_twot, labels, labelsc);
   }
 }
 
-void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int parametert) {
+void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int parametert, struct label_s* labels, unsigned int labelsc) {
   // Declare some remember variables
   // Remember pointer to allocated parameter content memory
   void* parameterc = NULL;
@@ -433,10 +433,45 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
 
     // Update parameter length
     parametercl = 4;
-  }
 
-  // If no content needs to be written NOTE: Remove when every parameter is implemented
-  if(parameterc == NULL) return;
+  // Check for name parameter type
+  } else if(parametert == PAR_NAME) {
+    // Store current label
+    struct label_s* labelp = NULL;
+
+    // Loop through exisiting labels
+    for(unsigned int i = 0; i < labelsc; i++) {
+      // Get current label
+      labelp = &labels[i];
+
+      // Check if names are equal
+      if(strcmp(parameter, labelp->name) == 0) {
+        // Allocate space
+        uint32_t* c = hmalloc(4);
+
+        // Set address as content
+        *c = labelp->address;
+
+        // Update current pointer
+        parameterc = c;
+
+        // Update parameter length
+        parametercl = 4;
+
+        // End loop
+        break;
+      }
+    }
+
+    // Check if label address is not assigned
+    if(parameterc == NULL) {
+      // Print error message
+      printf("The label `%s` could not be found.\n", parameter);
+
+      // Exit with error code
+      exit(EX_FAL);
+    }
+  }
 
   // Store parameter head
   m[(*ccurrent)++] = (uint8_t)parametert;

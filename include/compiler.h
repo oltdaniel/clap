@@ -59,8 +59,8 @@ struct label_s {
 };
 
 int compiler_run(char*, char*);
-void compiler_parameters(char*, char*, uint32_t*, uint32_t*, int);
-void compiler_store_parameter(char*, uint32_t*, char*, int);
+void compiler_parameters(char*, char*, uint32_t*, uint32_t*, int, struct label_s*, unsigned int);
+void compiler_store_parameter(char*, uint32_t*, char*, int, struct label_s*, unsigned int);
 void compiler_label(char*, char*, uint32_t*, uint32_t*, int, struct label_s*, unsigned int*);
 
 #endif
