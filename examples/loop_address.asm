@@ -1,3 +1,4 @@
+; Endless loop with address
 move r00 #12
 
 .org @x10

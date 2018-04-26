@@ -7,7 +7,7 @@
 #include "info.h"
 
 // Set bool as alias for int
-#define bool int
+#define bool char
 
 // Define bool values
 #define true 1

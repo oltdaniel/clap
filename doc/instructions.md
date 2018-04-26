@@ -64,7 +64,8 @@ recognizable by the compiler.
 ##### `var`
 
 ```assembly
-.var message 'Hello World'
+.nam message
+.var 'Hello World'
 ; The memory address with the name message contains the value 'Hello World'
 ```
 

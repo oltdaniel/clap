@@ -70,7 +70,7 @@ int compiler_run(char* m, char* buffer) {
   char* lab = hmalloc(3);
 
   // Store the found address aliases
-  void* labels = hmalloc(sizeof(struct label_s) * 10);
+  struct label_s* labels = hmalloc(sizeof(struct label_s) * 10);
 
   // Store how many labels have been stored
   unsigned int labelsc = 0;
@@ -108,6 +108,9 @@ int compiler_run(char* m, char* buffer) {
       // Copy label from buffer
       strncpy(lab, buffer + current, 3);
 
+      // Update current position
+      current += 3;
+
       // Check for end of file
       if(lab[2] == 0) break;
 
@@ -120,7 +123,16 @@ int compiler_run(char* m, char* buffer) {
       else if(strcmp(lab, "var") == 0) labelt = LAB_VAR;
 
       // Store the labels
-      compiler_label(m, buffer, &current, &ccurrent, labelt, labels, &labelsc, &labelss);
+      compiler_label(m, buffer, &current, &ccurrent, labelt, labels, &labelsc);
+
+      // Check for reaming labels list space
+      if(labelsc >= labelss) {
+        // Increment size of labels list
+        labelss += 2;
+
+        // Reallocate space
+        labels = realloc(labels, labelss * sizeof(struct label_s));
+      }
 
       // Jump to next round
       continue;
@@ -176,6 +188,9 @@ int compiler_run(char* m, char* buffer) {
     // Debug message NOTE: Remove later
     hexDump("memory", m, ccurrent);
   }
+
+  // Debug message NOTE: Remove later
+  hexDump("memory", m, ccurrent);
 
   // Return success code
   return EX_OKA;
@@ -433,21 +448,114 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
   *ccurrent += parametercl;
 }
 
-void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, int labt, void* labels, unsigned int* labelsc, unsigned int* labelss) {
-  // NOTE: Ignore labels for now
+void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, int labt, struct label_s* labels, unsigned int* labelsc) {
+  // Ignore unknown label
+  if(labt == LAB_UNKNOWN) return;
 
-  // Store current char
-  char c;
+  // Ignore first whitespace
+  (*current)++;
 
-  // Loop to the line end
+  // Remember parameter length
+  unsigned int plength = 0;
+
+  // Store current character in buffer
+  char c = 0;
+
+  // Read to line end
   while(c != '\n') {
-    // Read next char from buffer
+    // Read next character
     c = buffer[(*current)++];
 
     // Check for null terminator
     if(c == 0) break;
+
+    // Increment parameter length
+    plength++;
   }
 
-  // Decrement position
-  (*current)--;
+  // Allocate parameter space
+  char* parameter = hmalloc(plength);
+
+  // Copy parameter from buffer
+  strncpy(parameter, buffer + *current - plength, plength - 1);
+
+  // Store parameter type
+  int parametert = PAR_NAME;
+
+  // Recognize parameter one type
+  if(parameter[0] == 'r') parametert = PAR_REGISTER;
+  else if(parameter[0] == '@') parametert = PAR_ADDRESS;
+  else if(parameter[0] == '#') parametert = PAR_VALUE;
+  else if(parameter[0] == '\'') parametert = PAR_STRING;
+
+  // Validate parameter type
+  if(
+    // Validate org label
+    !(labt == LAB_ORG && (parametert == PAR_ADDRESS))
+    &&
+    // Validate nam label
+    !(labt == LAB_NAM && (parametert == PAR_NAME))
+    &&
+    // Validate var label
+    !(labt == LAB_VAR && (parametert == PAR_VALUE
+                          || parametert == PAR_STRING))
+  ) {
+    // Print error message
+    printf("Wrong parameter types given.\n");
+
+    // Exit with error code
+    exit(EX_FAL);
+  }
+
+  // Check for org label
+  if(labt == LAB_ORG) {
+    // Ignore first character
+    parameter++;
+
+    // Allocate space
+    uint32_t* c = hmalloc(4);
+
+    // Check for hex format
+    if(parameter[0] == 'x') {
+      // Translate memory to integer
+      *c = strtol(parameter + 1, NULL, 16);
+    } else {
+      // Translate memory to integer
+      *c = atol(parameter);
+    }
+
+    // Update current memory position
+    *ccurrent = *c;
+
+  // Check for nam label
+  } else if(labt == LAB_NAM) {
+    // Get label struct from list
+    struct label_s* labelp = &labels[(*labelsc)++];
+
+    // Update name property
+    labelp->name = parameter;
+
+    // Update address parameter
+    labelp->address = *ccurrent;
+
+  // Check for var label
+  } else if(labt == LAB_VAR) {
+    // Ignore first character
+    parameter++;
+
+    // Update parameter length (ignore closing character)
+    unsigned int parameterl = strlen(parameter) - 1;
+
+    // Allocate space
+    uint32_t* c = hmalloc(parameterl);
+
+    // Copy memory
+    memcpy(c, parameter, parameterl);
+
+    // Copy parameter content to the memory
+    memcpy(m + *ccurrent, c, parameterl);
+
+    // Update memory position
+    *ccurrent += parameterl;
+  }
 }

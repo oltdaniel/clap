@@ -41,6 +41,7 @@ enum {
   PAR_ADDRESS,
   PAR_REGISTER,
   PAR_VALUE,
+  PAR_STRING,
 };
 
 // Label type ids
@@ -60,6 +61,6 @@ struct label_s {
 int compiler_run(char*, char*);
 void compiler_parameters(char*, char*, uint32_t*, uint32_t*, int);
 void compiler_store_parameter(char*, uint32_t*, char*, int);
-void compiler_label(char*, char*, uint32_t*, uint32_t*, int, void*, unsigned int*, unsigned int*);
+void compiler_label(char*, char*, uint32_t*, uint32_t*, int, struct label_s*, unsigned int*);
 
 #endif
