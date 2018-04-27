@@ -38,6 +38,7 @@ enum {
 
 struct machine_s* machine_new();
 int machine_load(struct machine_s*, char*);
+void machine_step(struct machine_s*);
 void machine_run(struct machine_s*);
 
 #endif

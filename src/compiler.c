@@ -180,7 +180,7 @@ int compiler_run(char* m, char* buffer) {
     }
 
     // Add instruction to memory
-    m[ccurrent++] = inst;
+    m[ccurrent++] = (uint8_t)inst;
 
     // Read parameters
     compiler_parameters(m, buffer, &current, &ccurrent, inst, labels, labelsc);

@@ -52,12 +52,28 @@ int machine_load(struct machine_s* m, char* file) {
   return status;
 }
 
+void machine_step(struct machine_s* m) {
+  // Get instruction
+  uint8_t ins = m->memory[m->ip++];
+
+  // NOTE: Parameters will be read correctly in each instruction statement
+
+  // Execute instructions
+  switch (ins) {
+    case INS_HALT:
+      /* Stop running */
+      m->running = false;
+      break;
+  }
+}
+
 void machine_run(struct machine_s* m) {
   // Update status
   m->running = true;
 
   // Execute code
-
-  // Update status
-  m->running = false;
+  while(m->running) {
+    // Execute step
+    machine_step(m);
+  }
 }
