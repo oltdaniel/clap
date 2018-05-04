@@ -14,5 +14,6 @@
 #define false 0
 
 void* hmalloc(size_t);
+void hex_dump(char*, void*, int);
 
 #endif

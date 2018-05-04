@@ -154,19 +154,22 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
   char* parameter_one = NULL;
   char* parameter_two = NULL;
 
-  // Ingore first whitespace
-  if(buffer[*current] == ' ') (*current)++;
+  // Ignore if current char is line end
+  if(buffer[(*current)] == '\n') return;
 
   // Read parameters
-  while(c != '\n') {
+  while(1) {
     // Read next character from buffer
-    c = buffer[(*current)++];
+    c = buffer[++(*current)];
 
-    // Check for null terminator
-    if(c == 0) break;
+    // Check for line end and null terminator
+    if(c == '\n' || c == 0) break;
+
+    // Increment parameter length
+    plength++;
 
     // Check for space or first&last parameter
-    if(c == ' ' || (parameter == 0 && c == '\n')) {
+    if(c == ' ') {
       // Update parameter count
       parameter++;
 
@@ -174,26 +177,24 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
       parameter_one = hmalloc(plength);
 
       // Read from buffer with offset
-      strncpy(parameter_one, buffer + (*current - plength - 1), plength);
+      strncpy(parameter_one, buffer + *current - plength, plength);
 
       // Reset and new parameter round
       plength = 0;
-    } else if(c == '\n') {
-      // Update parameter count
-      parameter++;
 
-      // Allocate parameter space
-      parameter_two = hmalloc(plength);
-
-      // Read from buffer with offset
-      strncpy(parameter_two, buffer + (*current - plength - 1), plength);
-
-      // Reset and break reading
-      plength = 0;
-    } else {
-      // Increment parameter length
-      plength++;
     }
+  }
+
+  // Check if second parameter exists
+  if(plength > 0) {
+    // Update parameter count
+    parameter++;
+
+    // Allocate parameter space
+    parameter_two = hmalloc(plength);
+
+    // Read from buffer with offset
+    strncpy(parameter_two, buffer + *current - plength, plength);
   }
 
   // Validate parameter count
@@ -488,20 +489,14 @@ void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent
     // Ignore first character
     parameter++;
 
-    // Allocate space
-    uint32_t* c = hmalloc(4);
-
     // Check for hex format
     if(parameter[0] == 'x') {
       // Translate memory to integer
-      *c = strtol(parameter + 1, NULL, 16);
+      *ccurrent = strtol(parameter + 1, NULL, 16);
     } else {
       // Translate memory to integer
-      *c = atol(parameter);
+      *ccurrent = atol(parameter);
     }
-
-    // Update current memory position
-    *ccurrent = *c;
 
   // Check for nam label
   } else if(labt == LAB_NAM) {
@@ -516,22 +511,42 @@ void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent
 
   // Check for var label
   } else if(labt == LAB_VAR) {
-    // Ignore first character
-    parameter++;
+    // Copy parameter to memory depending on type
+    if(parametert == PAR_STRING) {
+      // Ignore first character
+      parameter++;
 
-    // Update parameter length (ignore closing character)
-    unsigned int parameterl = strlen(parameter) - 1;
+      // Calculate string length
+      unsigned int parameterl = strlen(parameter) - 1;
 
-    // Allocate space
-    uint32_t* c = hmalloc(parameterl);
+      // Copy parameter content to the memory
+      memcpy(m + *ccurrent, parameter, parameterl);
 
-    // Copy memory
-    memcpy(c, parameter, parameterl);
+      // Update memory position
+      *ccurrent += parameterl;
 
-    // Copy parameter content to the memory
-    memcpy(m + *ccurrent, c, parameterl);
+    } else if(parametert == PAR_VALUE) {
+      // Ignore first character
+      parameter++;
 
-    // Update memory position
-    *ccurrent += parameterl;
+      // Store parameter value
+      uint64_t parameterc = 0;
+
+      // Convert number
+      if(parameter[0] == 'x') {
+        // Convert hex to int
+        parameterc = strtoll(parameter + 1, NULL, 16);
+
+      } else {
+        // Convert text to int
+        parameterc = atoll(parameter);
+      }
+
+      // Convert string to number and store in memory
+      memcpy(m + *ccurrent, &parameterc, 8);
+
+      // Update code memory position
+      *ccurrent += 8;
+    }
   }
 }
