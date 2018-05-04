@@ -122,12 +122,12 @@ void machine_step(struct machine_s* m) {
       // Check for register
       if(ptwot == PAR_REGISTER) {
         // Get value from register, and add offset (register == 8bit)
-        ptwov = m->registers[m->memory[m->ip++]];
+        ptwov = (uint8_t)m->memory[m->ip++];
       
       // Check for address
       } else if(ptwot == PAR_ADDRESS) {
         // Get value from code memory as 64bit
-        ptwov = (uint64_t)m->memory[(uint32_t)m->memory[m->ip]];
+        ptwov = (uint32_t)m->memory[m->ip];
 
         // Add offset to instruction pointer (address == 32bit)
         m->ip += 4;
@@ -148,19 +148,6 @@ void machine_step(struct machine_s* m) {
     case INS_HALT:
       // Stop machine
       m->running = false;
-      break;
-
-    case INS_MOVE:
-      // Execute move based on first parameter type
-      if(ponet == PAR_REGISTER) {
-        // Move second parameter value to register
-        m->registers[(uint8_t)ponev] = ptwov;
-
-      // Check for first parameter type address
-      } else if(ponet == PAR_ADDRESS) {
-        // Assign value to memory
-        m->memory[ponev] = ptwov;
-      }
       break;
   }
 
