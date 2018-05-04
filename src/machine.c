@@ -60,7 +60,7 @@ void machine_step(struct machine_s* m) {
   uint8_t ponet = PAR_NAME;
 
   // Cache first parameter position
-  uint32_t ponep = 0;
+  uint64_t ponev = 0;
 
   // Cache second parameter type
   uint8_t ptwot = PAR_NAME;
@@ -68,53 +68,53 @@ void machine_step(struct machine_s* m) {
   // Cache second parameter value
   uint64_t ptwov = 0;
 
-  // NOTE: Parameters will be read correctly in each instruction statement
-
-  // Execute instructions
+  /* Parse first parameter if needed */
   switch (ins) {
-    case INS_NOOP:
-      break;
-
-    case INS_HALT:
-      /* Stop running */
-      m->running = false;
-      break;
-
     case INS_ALLO:
-      break;
-
     case INS_POPE:
-      break;
-
     case INS_PUSH:
-      break;
-
     case INS_JUMZ:
-      break;
-
     case INS_JUMP:
-      break;
-
     case INS_CMPZ:
-      break;
-
-    case INS_FLAZ:
-      break;
-
     case INS_MOVZ:
-      break;
-
     case INS_MOVE:
+    case INS_SUBI:
+    case INS_ADDI:
       // Get first parameter type
       ponet = m->memory[m->ip++];
 
-      // Get first parameter pointer
-      ponep =  m->ip;
+      /* Get value behind first parameter */
+      // Check for register
+      if(ponet == PAR_REGISTER) {
+        // Get register number, and add offset to instruction pointer
+        // (register == 8bit)
+        ponev = (uint8_t)m->memory[m->ip++];
 
-      // Calculate first parameter size
-      if(ponet == PAR_REGISTER) m->ip++;
-      else m->ip += 4; // Address == 32bit
+      // Check for address
+      } else if(ponet == PAR_ADDRESS) {
+        // Get address
+        ponev = (uint32_t)m->memory[m->ip];
 
+        // Add offset to instruction pointer (address == 32bit)
+        m->ip += 4;
+
+      // Check for value
+      } else if(ponet == PAR_VALUE) {
+        // Get value
+        ponev = (uint64_t)m->memory[m->ip];
+
+        // Add offset to instruction pointer (value == 64bit)
+        m->ip += 8;
+      }
+      break;
+  }
+
+  /* Parse second parameter if needed */
+  switch(ins) {
+    case INS_ALLO:
+    case INS_MOVE:
+    case INS_SUBI:
+    case INS_ADDI:
       // Get second parameter type
       ptwot = m->memory[m->ip++];
 
@@ -140,25 +140,27 @@ void machine_step(struct machine_s* m) {
         // Add offset to instrction pointer (value == 64bit)
         m->ip += 8;
       }
+  }
 
-      /* Execute move */
-      // Check for first parameter type register
+  /* Execute instructions */
+  // Check for instruction
+  switch(ins) {
+    case INS_HALT:
+      // Stop machine
+      m->running = false;
+      break;
+
+    case INS_MOVE:
+      // Execute move based on first parameter type
       if(ponet == PAR_REGISTER) {
         // Move second parameter value to register
-        m->registers[(uint8_t)m->memory[ponep]] = ptwov;
+        m->registers[(uint8_t)ponev] = ptwov;
 
       // Check for first parameter type address
       } else if(ponet == PAR_ADDRESS) {
         // Assign value to memory
-        m->memory[ponep] = ptwov;
+        m->memory[ponev] = ptwov;
       }
-
-      break;
-
-    case INS_SUBI:
-      break;
-
-    case INS_ADDI:
       break;
   }
 
