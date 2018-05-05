@@ -162,16 +162,27 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
     // Read next character from buffer
     c = buffer[++(*current)];
 
-    // Check for line end and null terminator
-    if(c == '\n' || c == 0) break;
-
     // Increment parameter length
     plength++;
 
     // Check for space or first&last parameter
-    if(c == ' ') {
+    if(c == ' ' || c == '\n') {
       // Update parameter count
       parameter++;
+
+      // Check if second parameter reached
+      if(parameter == 2) {
+        // Ignore whitespace
+        plength--;
+
+        // Allocate parameter space
+        parameter_two = hmalloc(plength);
+
+        // Read from buffer with offset
+        strncpy(parameter_two, buffer + *current - plength, plength);
+
+        break;
+      }
 
       // Allocate parameter space
       parameter_one = hmalloc(plength);
@@ -183,18 +194,9 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
       plength = 0;
 
     }
-  }
 
-  // Check if second parameter exists
-  if(plength > 0) {
-    // Update parameter count
-    parameter++;
-
-    // Allocate parameter space
-    parameter_two = hmalloc(plength);
-
-    // Read from buffer with offset
-    strncpy(parameter_two, buffer + *current - plength, plength);
+    // Check for line end and null terminator
+    if(c == '\n' || c == 0) break;
   }
 
   // Validate parameter count
@@ -399,6 +401,9 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
 
         // Update parameter length
         parametercl = 4;
+
+        // Update parameter type
+        parametert = PAR_ADDRESS;
 
         // End loop
         break;

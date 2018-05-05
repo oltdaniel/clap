@@ -56,6 +56,9 @@ void machine_step(struct machine_s* m) {
   // Get instruction
   uint8_t ins = m->memory[m->ip++];
 
+  // Ignore step if instruction is unknown
+  if(ins == INS_UNKNOWN) return;
+
   // Cache first parameter type
   uint8_t ponet = PAR_NAME;
 
@@ -93,7 +96,7 @@ void machine_step(struct machine_s* m) {
       // Check for address
       } else if(ponet == PAR_ADDRESS) {
         // Get address
-        ponev = (uint32_t)m->memory[m->ip];
+        memcpy(&ponev, m->memory + m->ip, 4);
 
         // Add offset to instruction pointer (address == 32bit)
         m->ip += 4;
@@ -123,11 +126,11 @@ void machine_step(struct machine_s* m) {
       if(ptwot == PAR_REGISTER) {
         // Get value from register, and add offset (register == 8bit)
         ptwov = (uint8_t)m->memory[m->ip++];
-      
+
       // Check for address
       } else if(ptwot == PAR_ADDRESS) {
-        // Get value from code memory as 64bit
-        ptwov = (uint32_t)m->memory[m->ip];
+        // Get value from code memory as 32bit
+        memcpy(&ptwov, m->memory + m->ip, 4);
 
         // Add offset to instruction pointer (address == 32bit)
         m->ip += 4;
@@ -186,6 +189,11 @@ void machine_step(struct machine_s* m) {
       m->running = false;
       break;
 
+    case INS_JUMP:
+      // Change instruction pointer position to given position
+      m->ip = (uint32_t)ponev;
+      break;
+
     case INS_MOVE:
       // Move second parameter value depending on first parameter
       if(ponet == PAR_REGISTER) {
@@ -196,6 +204,27 @@ void machine_step(struct machine_s* m) {
         // Move value to memory
         memcpy(m->memory + ponev, &ptwov, 8);
 
+      }
+      break;
+
+    case INS_SUBI:
+      // Substract value depending on first parameter
+      if(ponet == PAR_REGISTER) {
+        // Substract value from register
+        m->registers[ponev] -= ptwov;
+
+      } else if(ponet == PAR_ADDRESS) {
+        // Store target
+        uint32_t target = ponev;
+
+        // Get value from first parameter
+        memcpy(&ponev, m->memory + ponev, 8);
+
+        // Substract both numbers
+        ponev -= ptwov;
+
+        // Copy result to memory
+        memcpy(m->memory + target, &ponev, 8);
       }
       break;
 
@@ -210,7 +239,7 @@ void machine_step(struct machine_s* m) {
         uint32_t target = ponev;
 
         // Get value from first parameter
-        memcpy(&ponev, m->memory + ponev, 8); 
+        memcpy(&ponev, m->memory + ponev, 8);
 
         // Add both numbers
         ponev += ptwov;
@@ -218,7 +247,6 @@ void machine_step(struct machine_s* m) {
         // Copy result to memory
         memcpy(m->memory + target, &ponev, 8);
       }
-
       break;
   }
 
