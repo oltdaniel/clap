@@ -17,54 +17,25 @@ void* hmalloc(size_t size) {
   return space;
 }
 
-void hex_dump(char *desc, void *addr, int len) {
-  int i;
-  unsigned char buff[17];
-  unsigned char *pc = (unsigned char*)addr;
+void hex_dump(char* title, void *addr, uint16_t len) {
+  // Convert pointer to buffer
+  uint8_t* buf = (uint8_t*)addr;
 
-  // Output description if given.
-  if (desc != NULL)
-      printf ("%s:\n", desc);
+  // Print dump title
+  printf("%s:", title);
 
-  if (len == 0) {
-      printf("  ZERO LENGTH\n");
-      return;
-  }
-  if (len < 0) {
-      printf("  NEGATIVE LENGTH: %i\n",len);
-      return;
-  }
+  // Print memory by 16 bytes a row
+  for(uint16_t i = 0; i < len; i++) {
+    // Check for new row
+    if((i % 16) == 0) {
+      // Print some padding
+      printf("\n %04x | ", i);
+    }
 
-  // Process every byte in the data.
-  for (i = 0; i < len; i++) {
-      // Multiple of 16 means new line (with line offset).
-
-      if ((i % 16) == 0) {
-          // Just don't print ASCII for the zeroth line.
-          if (i != 0)
-              printf ("  %s\n", buff);
-
-          // Output the offset.
-          printf ("  %04x ", i);
-      }
-
-      // Now the hex code for the specific character.
-      printf (" %02x", pc[i]);
-
-      // And store a printable ASCII character for later.
-      if ((pc[i] < 0x20) || (pc[i] > 0x7e))
-          buff[i % 16] = '.';
-      else
-          buff[i % 16] = pc[i];
-      buff[(i % 16) + 1] = '\0';
+    // Print byte in hex format
+    printf("%02x ", buf[i]);
   }
 
-  // Pad out last line if not exactly 16 characters.
-  while ((i % 16) != 0) {
-      printf ("   ");
-      i++;
-  }
-
-  // And print the final ASCII bit.
-  printf ("  %s\n", buff);
+  // Break line
+  printf("\n");
 }

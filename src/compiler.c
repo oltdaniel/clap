@@ -2,10 +2,10 @@
 
 int compiler_run(char* m, char* buffer) {
   // Remember current position in the buffer
-  unsigned long int current = 0;
+  uint32_t current = 0;
 
   // Rememeber current position in the code memory
-  unsigned long int ccurrent = 0;
+  uint32_t ccurrent = 0;
 
   // Store current character
   char c = 0;
@@ -20,10 +20,10 @@ int compiler_run(char* m, char* buffer) {
   struct label_s* labels = hmalloc(sizeof(struct label_s) * 10);
 
   // Store how many labels have been stored
-  unsigned int labelsc = 0;
+  uint16_t labelsc = 0;
 
   // Store how many labels are allocated
-  unsigned int labelss = 10;
+  uint16_t labelss = 10;
 
   // Loop through the buffer
   while(1) {
@@ -62,7 +62,7 @@ int compiler_run(char* m, char* buffer) {
       if(lab[2] == 0) break;
 
       // Remember label type
-      int labelt = LAB_UNKNOWN;
+      uint8_t labelt = LAB_UNKNOWN;
 
       // Identify label type
       if(strcmp(lab, "org") == 0) labelt = LAB_ORG;
@@ -100,7 +100,7 @@ int compiler_run(char* m, char* buffer) {
     if(ins[3] == 0) break;
 
     // Store the instruction type
-    int inst = INS_UNKNOWN;
+    uint8_t inst = INS_UNKNOWN;
 
     // Recognize instruction
     if(strcmp(ins, "halt") == 0) inst = INS_HALT;
@@ -127,7 +127,7 @@ int compiler_run(char* m, char* buffer) {
     }
 
     // Add instruction to memory
-    m[ccurrent++] = (unsigned char)inst;
+    m[ccurrent++] = inst;
 
     // Read parameters
     compiler_parameters(m, buffer, &current, &ccurrent, inst, labels, labelsc);
@@ -137,7 +137,7 @@ int compiler_run(char* m, char* buffer) {
   return ccurrent;
 }
 
-void compiler_parameters(char* m, char* buffer, unsigned long int* current, unsigned long int* ccurrent, int inst, struct label_s* labels, unsigned int labelsc) {
+void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, uint8_t inst, struct label_s* labels, uint16_t labelsc) {
   // Ingore unknown instructions
   if(inst == 0) return;
 
@@ -145,10 +145,10 @@ void compiler_parameters(char* m, char* buffer, unsigned long int* current, unsi
   char c = 0;
 
   // Store parameter count
-  unsigned int parameter = 0;
+  uint8_t parameter = 0;
 
   // Store current parameter length
-  unsigned int plength = 0;
+  uint16_t plength = 0;
 
   // Store parameter values
   char* parameter_one = NULL;
@@ -224,8 +224,8 @@ void compiler_parameters(char* m, char* buffer, unsigned long int* current, unsi
   if(parameter == 0) return;
 
   // Remember parameter types
-  int parameter_onet = PAR_NAME;
-  int parameter_twot = PAR_NAME;
+  uint8_t parameter_onet = PAR_NAME;
+  uint8_t parameter_twot = PAR_NAME;
 
   // Recognize parameter one type
   if(parameter_one[0] == 'r') parameter_onet = PAR_REGISTER;
@@ -307,13 +307,13 @@ void compiler_parameters(char* m, char* buffer, unsigned long int* current, unsi
   }
 }
 
-void compiler_store_parameter(char* m, unsigned long int* ccurrent, char* parameter, int parametert, struct label_s* labels, unsigned int labelsc) {
+void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, uint8_t parametert, struct label_s* labels, uint16_t labelsc) {
   // Declare some remember variables
   // Remember pointer to allocated parameter content memory
   void* parameterc = NULL;
 
   // Remmeber content length of parameter
-  unsigned int parametercl = 0;
+  uint16_t parametercl = 0;
 
   // Check for register parameter type
   if(parametert == PAR_REGISTER) {
@@ -321,7 +321,7 @@ void compiler_store_parameter(char* m, unsigned long int* ccurrent, char* parame
     parameter++;
 
     // Allocate space
-    unsigned char* c = hmalloc(1);
+    uint8_t* c = hmalloc(1);
 
     // Translate memory to integer
     *c = atoi(parameter);
@@ -338,7 +338,7 @@ void compiler_store_parameter(char* m, unsigned long int* ccurrent, char* parame
     parameter++;
 
     // Allocate space
-    unsigned long long int* c = hmalloc(8);
+    uint64_t* c = hmalloc(8);
 
     // Check for hex format
     if(parameter[0] == 'x') {
@@ -361,7 +361,7 @@ void compiler_store_parameter(char* m, unsigned long int* ccurrent, char* parame
     parameter++;
 
     // Allocate space
-    unsigned long int* c = hmalloc(4);
+    uint32_t* c = hmalloc(4);
 
     // Check for hex format
     if(parameter[0] == 'x') {
@@ -384,14 +384,14 @@ void compiler_store_parameter(char* m, unsigned long int* ccurrent, char* parame
     struct label_s* labelp = NULL;
 
     // Loop through exisiting labels
-    for(unsigned int i = 0; i < labelsc; i++) {
+    for(uint8_t i = 0; i < labelsc; i++) {
       // Get current label
       labelp = &labels[i];
 
       // Check if names are equal
       if(strcmp(parameter, labelp->name) == 0) {
         // Allocate space
-        unsigned long int* c = hmalloc(4);
+        uint32_t* c = hmalloc(4);
 
         // Set address as content
         *c = labelp->address;
@@ -421,7 +421,7 @@ void compiler_store_parameter(char* m, unsigned long int* ccurrent, char* parame
   }
 
   // Store parameter head
-  m[(*ccurrent)++] = (unsigned char)parametert;
+  m[(*ccurrent)++] = parametert;
 
   // Copy parameter content to the memory
   memcpy(m + *ccurrent, parameterc, parametercl);
@@ -430,7 +430,7 @@ void compiler_store_parameter(char* m, unsigned long int* ccurrent, char* parame
   *ccurrent += parametercl;
 }
 
-void compiler_label(char* m, char* buffer, unsigned long int* current, unsigned long int* ccurrent, int labt, struct label_s* labels, unsigned int* labelsc) {
+void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, uint8_t labt, struct label_s* labels, uint16_t* labelsc) {
   // Ignore unknown label
   if(labt == LAB_UNKNOWN) return;
 
@@ -438,7 +438,7 @@ void compiler_label(char* m, char* buffer, unsigned long int* current, unsigned 
   (*current)++;
 
   // Remember parameter length
-  unsigned int plength = 0;
+  uint16_t plength = 0;
 
   // Store current character in buffer
   char c = 0;
@@ -462,7 +462,7 @@ void compiler_label(char* m, char* buffer, unsigned long int* current, unsigned 
   strncpy(parameter, buffer + *current - plength, plength - 1);
 
   // Store parameter type
-  int parametert = PAR_NAME;
+  uint8_t parametert = PAR_NAME;
 
   // Recognize parameter one type
   if(parameter[0] == 'r') parametert = PAR_REGISTER;
@@ -522,7 +522,7 @@ void compiler_label(char* m, char* buffer, unsigned long int* current, unsigned 
       parameter++;
 
       // Calculate string length
-      unsigned int parameterl = strlen(parameter) - 1;
+      uint16_t parameterl = strlen(parameter) - 1;
 
       // Copy parameter content to the memory
       memcpy(m + *ccurrent, parameter, parameterl);
@@ -535,7 +535,7 @@ void compiler_label(char* m, char* buffer, unsigned long int* current, unsigned 
       parameter++;
 
       // Store parameter value
-      unsigned long long int parameterc = 0;
+      uint64_t parameterc = 0;
 
       // Convert number
       if(parameter[0] == 'x') {

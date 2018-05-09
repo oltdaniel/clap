@@ -12,15 +12,15 @@
 // The machine struct
 struct machine_s {
   // 20 registers, 64bit each
-  unsigned long long int* registers;
+  uint64_t* registers;
 
   // Memory
   char* memory;
 
   // Pointers
-  unsigned long int ip;
-  unsigned long int sp;
-  unsigned long int ap;
+  uint32_t ip;
+  uint32_t sp;
+  uint32_t ap;
 
   // Flags
   char flags;
@@ -38,7 +38,7 @@ enum {
 };
 
 struct machine_s* machine_new();
-unsigned long int machine_load(struct machine_s*, char*);
+uint32_t machine_load(struct machine_s*, char*);
 void machine_step(struct machine_s*);
 void machine_run(struct machine_s*);
 

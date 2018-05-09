@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "info.h"
 
@@ -14,6 +15,6 @@
 #define false 0
 
 void* hmalloc(size_t);
-void hex_dump(char*, void*, int);
+void hex_dump(char*, void*, uint16_t);
 
 #endif

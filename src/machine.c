@@ -5,7 +5,7 @@ struct machine_s* machine_new() {
   struct machine_s* m = hmalloc(sizeof(struct machine_s));
 
   // Allocate registers
-  m->registers = hmalloc(sizeof(unsigned long long int) * 20);
+  m->registers = hmalloc(sizeof(uint64_t) * 20);
 
   // Allocate memory
   m->memory = hmalloc(MEMORY_SIZE);
@@ -20,7 +20,7 @@ struct machine_s* machine_new() {
   return m;
 }
 
-unsigned long int machine_load(struct machine_s* m, char* file) {
+uint32_t machine_load(struct machine_s* m, char* file) {
   // Open file
   FILE* codep = fopen(file, "r");
 
@@ -37,7 +37,7 @@ unsigned long int machine_load(struct machine_s* m, char* file) {
   fseek(codep, 0, SEEK_END);
 
   // Read position (filesize)
-  long int sz = ftell(codep);
+  uint16_t sz = (uint16_t)ftell(codep);
 
   // Reset file position
   fseek(codep, 0, SEEK_SET);
@@ -49,7 +49,7 @@ unsigned long int machine_load(struct machine_s* m, char* file) {
   fread(buffer, sz, 1, codep);
 
   // Compile the assembly code and store in machine memeory
-  unsigned long int ccurrent = compiler_run(m->memory, buffer);
+  uint32_t ccurrent = compiler_run(m->memory, buffer);
 
   // Update allocation pointer
   m->ap = ccurrent;
@@ -60,22 +60,22 @@ unsigned long int machine_load(struct machine_s* m, char* file) {
 
 void machine_step(struct machine_s* m) {
   // Get instruction
-  unsigned char ins = m->memory[m->ip++];
+  uint8_t ins = m->memory[m->ip++];
 
   // Ignore step if instruction is unknown
   if(ins == INS_UNKNOWN) return;
 
   // Cache first parameter type
-  unsigned char ponet = PAR_NAME;
+  uint8_t ponet = PAR_NAME;
 
   // Cache first parameter position
-  unsigned char ponev = 0;
+  uint32_t ponev = 0;
 
   // Cache second parameter type
-  unsigned char ptwot = PAR_NAME;
+  uint8_t ptwot = PAR_NAME;
 
   // Cache second parameter value
-  unsigned long long int ptwov = 0;
+  uint64_t ptwov = 0;
 
   /* Parse first parameter if needed */
   switch (ins) {
@@ -97,7 +97,7 @@ void machine_step(struct machine_s* m) {
       if(ponet == PAR_REGISTER) {
         // Get register number, and add offset to instruction pointer
         // (register == 8bit)
-        ponev = (unsigned char)m->memory[m->ip++];
+        ponev = (uint8_t)m->memory[m->ip++];
 
       // Check for address
       } else if(ponet == PAR_ADDRESS) {
@@ -131,7 +131,7 @@ void machine_step(struct machine_s* m) {
       // Check for register
       if(ptwot == PAR_REGISTER) {
         // Get value from register, and add offset (register == 8bit)
-        ptwov = (unsigned char)m->memory[m->ip++];
+        ptwov = (uint8_t)m->memory[m->ip++];
 
       // Check for address
       } else if(ptwot == PAR_ADDRESS) {
@@ -197,7 +197,7 @@ void machine_step(struct machine_s* m) {
 
     case INS_JUMP:
       // Change instruction pointer position to given position
-      m->ip = (unsigned long int)ponev;
+      m->ip = ponev;
       break;
 
     case INS_MOVE:
@@ -221,7 +221,7 @@ void machine_step(struct machine_s* m) {
 
       } else if(ponet == PAR_ADDRESS) {
         // Store target
-        unsigned long int target = ponev;
+        uint32_t target = ponev;
 
         // Get value from first parameter
         memcpy(&ponev, m->memory + ponev, 8);
@@ -242,7 +242,7 @@ void machine_step(struct machine_s* m) {
 
       } else if(ponet == PAR_ADDRESS) {
         // Store target
-        unsigned long int target = ponev;
+        uint32_t target = ponev;
 
         // Get value from first parameter
         memcpy(&ponev, m->memory + ponev, 8);
@@ -257,8 +257,8 @@ void machine_step(struct machine_s* m) {
   }
 
   // Log values of registers
-  for(unsigned char r = 0; r < 20; r++) {
-    printf("Register #%d = %llu\n", r, m->registers[r]);
+  for(uint8_t r = 0; r < 20; r++) {
+    printf("Register #%02d = %lu\n", r, m->registers[r]);
   }
 
   // Dump memory

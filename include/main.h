@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "info.h"
+#include "helpers.h"
 #include "machine.h"
 
 #endif

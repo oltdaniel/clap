@@ -27,6 +27,18 @@ $ make
 $ bin/clap help
 ```
 
+## About
+
+The clap machine is an 64bit based virtual machine. It has `20` registers, an
+memory that combines the code memory, the heap as well as the stack. To make
+use of these parts the clap machine uses its own assembly language, that will
+be compiled down to an bytecode file. More infos can be found in the
+documentation in `/doc`.
+
+One of the first goals is it, to define an ready to use instruction set, that
+can be implemented and executed on the machine. For more current `in-progress`
+tasks, take a look at the [issues](https://github.com/oltdaniel/clap/issues).
+
 ## Documentation
 
 Here some descriptions to the single parts of the machine:
@@ -38,22 +50,11 @@ Here some descriptions to the single parts of the machine:
 - [Examples](https://github.com/oltdaniel/clap/blob/master/doc/examples.md)
 - [Tutorial](https://github.com/oltdaniel/clap/blob/master/doc/tutorial.md)
 
-## About
-
-The clap machine is an 64bit based virtual machine. It has 20 registers, an
-memory that combines the code memory, the heap as well as the stack. To make
-use of these parts the clap machine uses its own assembly language, that will
-be compiled down to an bytecode file.
-
-One of the first goals is it, to define an ready to use instruction set, that
-can be implemented and executed on the machine. For more current `in-progress`
-tasks, take a look at the [issues](https://github.com/oltdaniel/clap/issues).
-
 ## License
 
 _Just do what you'd like to_
 
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/oltdaniel/timeparse.cr/blob/master/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/oltdaniel/clap/blob/master/LICENSE)
 
 #### Credit
 
