@@ -2,10 +2,10 @@
 
 int compiler_run(char* m, char* buffer) {
   // Remember current position in the buffer
-  uint32_t current = 0;
+  unsigned long int current = 0;
 
   // Rememeber current position in the code memory
-  uint32_t ccurrent = 0;
+  unsigned long int ccurrent = 0;
 
   // Store current character
   char c = 0;
@@ -127,17 +127,17 @@ int compiler_run(char* m, char* buffer) {
     }
 
     // Add instruction to memory
-    m[ccurrent++] = (uint8_t)inst;
+    m[ccurrent++] = (unsigned char)inst;
 
     // Read parameters
     compiler_parameters(m, buffer, &current, &ccurrent, inst, labels, labelsc);
   }
 
-  // Return success code
-  return EX_OKA;
+  // Return code position
+  return ccurrent;
 }
 
-void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, int inst, struct label_s* labels, unsigned int labelsc) {
+void compiler_parameters(char* m, char* buffer, unsigned long int* current, unsigned long int* ccurrent, int inst, struct label_s* labels, unsigned int labelsc) {
   // Ingore unknown instructions
   if(inst == 0) return;
 
@@ -307,7 +307,7 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
   }
 }
 
-void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int parametert, struct label_s* labels, unsigned int labelsc) {
+void compiler_store_parameter(char* m, unsigned long int* ccurrent, char* parameter, int parametert, struct label_s* labels, unsigned int labelsc) {
   // Declare some remember variables
   // Remember pointer to allocated parameter content memory
   void* parameterc = NULL;
@@ -321,7 +321,7 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
     parameter++;
 
     // Allocate space
-    uint8_t* c = hmalloc(1);
+    unsigned char* c = hmalloc(1);
 
     // Translate memory to integer
     *c = atoi(parameter);
@@ -338,7 +338,7 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
     parameter++;
 
     // Allocate space
-    uint64_t* c = hmalloc(8);
+    unsigned long long int* c = hmalloc(8);
 
     // Check for hex format
     if(parameter[0] == 'x') {
@@ -361,7 +361,7 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
     parameter++;
 
     // Allocate space
-    uint32_t* c = hmalloc(4);
+    unsigned long int* c = hmalloc(4);
 
     // Check for hex format
     if(parameter[0] == 'x') {
@@ -391,7 +391,7 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
       // Check if names are equal
       if(strcmp(parameter, labelp->name) == 0) {
         // Allocate space
-        uint32_t* c = hmalloc(4);
+        unsigned long int* c = hmalloc(4);
 
         // Set address as content
         *c = labelp->address;
@@ -421,7 +421,7 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
   }
 
   // Store parameter head
-  m[(*ccurrent)++] = (uint8_t)parametert;
+  m[(*ccurrent)++] = (unsigned char)parametert;
 
   // Copy parameter content to the memory
   memcpy(m + *ccurrent, parameterc, parametercl);
@@ -430,7 +430,7 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, int 
   *ccurrent += parametercl;
 }
 
-void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, int labt, struct label_s* labels, unsigned int* labelsc) {
+void compiler_label(char* m, char* buffer, unsigned long int* current, unsigned long int* ccurrent, int labt, struct label_s* labels, unsigned int* labelsc) {
   // Ignore unknown label
   if(labt == LAB_UNKNOWN) return;
 
@@ -535,7 +535,7 @@ void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent
       parameter++;
 
       // Store parameter value
-      uint64_t parameterc = 0;
+      unsigned long long int parameterc = 0;
 
       // Convert number
       if(parameter[0] == 'x') {
