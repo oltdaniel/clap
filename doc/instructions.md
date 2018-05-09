@@ -78,7 +78,7 @@ a space if they are used.
 | Name | Parameters | Description |
 |-|-|-|
 | `addi` | address/register, address/register/value | Adds the value of both parameters and stores it in the first parameter |
-| `subi` | address/register, address/register/value | Substracts the value of both parameters and stores it in the first parameter |
+| `subi` | address/register, address/register/value | Subtracts the value of both parameters and stores it in the first parameter |
 | `move` | address/register, address/register/value | Moves the value of the second parameter to the first parameter |
 | `movz` | address/register | Clears the first parameter value |
 | `flaz` | _none_ | Clears all flags to the default state |

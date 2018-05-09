@@ -1,5 +1,7 @@
 # clap :clap:
 
+[![doc](https://img.shields.io/badge/doc-github-green.svg)](https://github.com/oltdaniel/clap/blob/master/doc/README.md)
+
 the vm
 
 ## Idea
@@ -10,10 +12,10 @@ The idea behind this project is, to create an virtual machine `(=machine)` that
 includes all the issues with computers, for example an overflow in the RAM or
 wrong memory allocation.
 
-To allow these things there is only a single memory. In this part we have the
-code in the lower part of the memory. After the code there is space for the
-heap, and at the highest address you will find the stack, which leads to an
-other architecture than other machines are using.
+To allow these things there is only a single memory which will contain the
+code in the lower part of the memory, followed by some space for the heap
+and the stack on the highest address. This will allow the code to change
+itself during the runtime.
 
 ## Installation
 
@@ -23,17 +25,25 @@ $ git clone https://github.com/oltdaniel/clap.git
 $ cd clap
 # Compile the code
 $ make
+```
+
+#### Usage
+
+```shell
 # Execute the machine
 $ bin/clap help
+# Run an example
+$ bin/clap run examples/math.asm
+# Clean the project
+$ make clean
 ```
 
 ## About
 
-The clap machine is an 64bit based virtual machine. It has `20` registers, an
+The clap machine is an `64bit` based virtual machine. It has `20` registers, an
 memory that combines the code memory, the heap as well as the stack. To make
 use of these parts the clap machine uses its own assembly language, that will
-be compiled down to an bytecode file. More infos can be found in the
-documentation in `/doc`.
+be compiled down to an bytecode file.
 
 One of the first goals is it, to define an ready to use instruction set, that
 can be implemented and executed on the machine. For more current `in-progress`
@@ -41,14 +51,7 @@ tasks, take a look at the [issues](https://github.com/oltdaniel/clap/issues).
 
 ## Documentation
 
-Here some descriptions to the single parts of the machine:
-
-- [Description](https://github.com/oltdaniel/clap/blob/master/doc/description.md)
-- [Architecture](https://github.com/oltdaniel/clap/blob/master/doc/architecture.md)
-- [Instructions](https://github.com/oltdaniel/clap/blob/master/doc/instructions.md)
-- [Interface](https://github.com/oltdaniel/clap/blob/master/doc/interface.md)
-- [Examples](https://github.com/oltdaniel/clap/blob/master/doc/examples.md)
-- [Tutorial](https://github.com/oltdaniel/clap/blob/master/doc/tutorial.md)
+Documentation can be found [here in `/doc`](https://github.com/oltdaniel/clap/blob/master/doc/README.md).
 
 ## License
 
