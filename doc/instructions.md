@@ -73,7 +73,7 @@ recognizable by the compiler.
 
 Instructions are executed by the machine with the specific parameters. Each
 instruction is 4 characters long, parameters are optional, but separated by
-a space if they are used. _(The `ID` is the number that can be used in the bytecode)_
+a space if they are used. _(The `ID` is the number that can be used in the bytecode, also remember that a name is equal to a register as a parameter)_
 
 | ID | Name | Parameters | Description |
 |-|-|-|-|

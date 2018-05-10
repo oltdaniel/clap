@@ -8,7 +8,7 @@ computer.
 ## Registers
 
 The machine has 20 registers, named from `r00` to `r19`. Each can store values
-up to a size of 64bit. Since this is a virtual machine, these memory sections
+up to a size of `64bit`. Since this is a virtual machine, these memory sections
 are stored in the RAM which is multiple times slower than registers in an real
 cpu architecture.
 
@@ -32,7 +32,7 @@ runtime.
 #### Stack
 
 The stack grows from the highest to the lowest address and is positioned at the
-top of the memory address spaces. Each item has a fixed size of `64bytes`.
+top of the memory address spaces. Each item has a fixed size of `64bits`.
 
 ## Pointers
 
