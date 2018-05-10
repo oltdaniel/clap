@@ -69,7 +69,7 @@ void machine_step(struct machine_s* m) {
   uint8_t ponet = PAR_NAME;
 
   // Cache first parameter position
-  uint32_t ponev = 0;
+  uint64_t ponev = 0;
 
   // Cache second parameter type
   uint8_t ptwot = PAR_NAME;
@@ -195,6 +195,47 @@ void machine_step(struct machine_s* m) {
       m->running = false;
       break;
 
+    case INS_POPE:
+      // Copy element
+      memcpy(&ptwov, m->memory + m->sp, 8);
+
+      // Increment stack pointer
+      m->sp += 8;
+
+      // Put to target depending on first parameter
+      if(ponet == PAR_REGISTER) {
+        // Set register value
+        m->registers[ponev] = ptwov;
+
+      } else if(ponet == PAR_ADDRESS) {
+        // Copy result to memory
+        memcpy(m->memory + ponev, &ptwov, 8);
+      }
+      break;
+
+    case INS_PUSH:
+      // Push value depending on first parameter
+      if(ponet == PAR_REGISTER) {
+        // Copy register value to stack
+        memcpy(m->memory + m->sp - 8, &m->registers[ponev], 8);
+
+        // Decrement stack pointer
+        m->sp -= 8;
+      } else if(ponet == PAR_ADDRESS) {
+        // Copy value from memory to stack
+        memcpy(m->memory + m->sp - 8, m->memory + ponev, 8);
+
+        // Decrement stack pointer
+        m->sp -= 8;
+      } else if(ponet == PAR_VALUE) {
+        // Copy value to stack
+        memcpy(m->memory + m->sp - 8, &ponev, 8);
+
+        // Decrement stack pointer
+        m->sp -= 8;
+      }
+      break;
+
     case INS_JUMP:
       // Change instruction pointer position to given position
       m->ip = ponev;
@@ -262,7 +303,7 @@ void machine_step(struct machine_s* m) {
   }
 
   // Dump memory
-  hex_dump("memory", m->memory, 128);
+  hex_dump("memory", m->memory, MEMORY_SIZE);
 }
 
 void machine_run(struct machine_s* m) {
