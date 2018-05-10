@@ -246,12 +246,13 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
     // Validate allo instruction parameters
     !(inst == INS_ALLO && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER)
-                      && (parameter_twot == PAR_ADDRESS
+                       && (parameter_twot == PAR_ADDRESS
                            || parameter_twot == PAR_REGISTER
                            || parameter_twot == PAR_VALUE))
     && // Validate pope instruction parameters
     !(inst == INS_POPE && (parameter_onet == PAR_ADDRESS
-                           || parameter_onet == PAR_REGISTER))
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_NAME))
     && // Validate push instruction parameters
     !(inst == INS_PUSH && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
@@ -483,7 +484,7 @@ void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent
                           || parametert == PAR_STRING))
   ) {
     // Print error message
-    printf("Wrong parameter types given.\n");
+    printf("Wrong label parameter types given.\n");
 
     // Exit with error code
     exit(EX_FAL);
