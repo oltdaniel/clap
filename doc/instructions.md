@@ -9,7 +9,7 @@ the existing ones, but with some decisive changes.
 ##### address
 
 An address can be recognized by the `@` followed by an address written in
-hexadecimal. **Example**: `@x123`
+hexadecimal. **Example**: `@x7B` or `@123`
 
 ##### register
 
@@ -21,7 +21,7 @@ registers in this machine. **Example**: `r02`
 
 An name is just an written word without any special characters to be recognized
 by the compiler. The only requirement is, that it needs to be alphanumeric to
-avoid compiler errors. **Example**: `nameThis`
+avoid compiler errors. It will be translated to an address in the memory. **Example**: `nameThis`
 
 ##### value
 
@@ -73,22 +73,22 @@ recognizable by the compiler.
 
 Instructions are executed by the machine with the specific parameters. Each
 instruction is 4 characters long, parameters are optional, but separated by
-a space if they are used.
+a space if they are used. _(The `ID` is the number that can be used in the bytecode)_
 
-| Name | Parameters | Description |
-|-|-|-|
-| `addi` | address/register, address/register/value | Adds the value of both parameters and stores it in the first parameter |
-| `subi` | address/register, address/register/value | Subtracts the value of both parameters and stores it in the first parameter |
-| `move` | address/register, address/register/value | Moves the value of the second parameter to the first parameter |
-| `movz` | address/register | Clears the first parameter value |
-| `flaz` | _none_ | Clears all flags to the default state |
-| `cmpz` | address/register/value | Checks if the value of the parameter is zero, if true set the zero flag |
-| `jump` | name | Jumps to an specified label |
-| `jumz` | name | Jumps if the zero flag is activated |
-| `push` | address/register/value | Push an element to the stack |
-| `pope` | address/register | Pops an element from the stack into the destination |
-| `allo` | address/register, address/register/value | Allocates x bytes (second parameter) and stores the address into the first parameter |
-| `noop` | _none_ | Consumes an cpu cycle like a sleep function |
-| `halt` | _none_ | Stops the machine from running |
+| ID | Name | Parameters | Description |
+|-|-|-|-|
+| 1 | `noop` | _none_ | Consumes an cpu cycle like a sleep function |
+| 2 | `halt` | _none_ | Stops the machine from running |
+| 3 | `allo` | address/register, address/register/value | Allocates x bytes (second parameter) and stores the address into the first parameter |
+| 4 | `pope` | address/register | Pops an element from the stack into the destination |
+| 5 | `push` | address/register/value | Push an element to the stack |
+| 6 | `jumz` | name | Jumps if the zero flag is activated |
+| 7 | `jump` | name | Jumps to an specified label |
+| 8 | `cmpz` | address/register/value | Checks if the value of the parameter is zero, if true set the zero flag |
+| 9 | `flaz` | _none_ | Clears all flags to the default state |
+| 10 | `movz` | address/register | Clears the first parameter value |
+| 11 | `move` | address/register, address/register/value | Moves the value of the second parameter to the first parameter |
+| 12 | `subi` | address/register, address/register/value | Subtracts the value of both parameters and stores it in the first parameter |
+| 13 | `addi` | address/register, address/register/value | Adds the value of both parameters and stores it in the first parameter |
 
 ###### **TODO**: Add more instructions

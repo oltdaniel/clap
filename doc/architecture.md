@@ -32,7 +32,7 @@ runtime.
 #### Stack
 
 The stack grows from the highest to the lowest address and is positioned at the
-top of the memory address spaces. Each item has a fixed size of `8bytes`.
+top of the memory address spaces. Each item has a fixed size of `64bytes`.
 
 ## Pointers
 
