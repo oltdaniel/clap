@@ -7,7 +7,7 @@ that is inspired by a real cpu architecture.
 Developers have the opportunity to work with 20 registers on an assembly basis,
 change code during runtime through the memory, or even add more instructions.
 
-# Documentation
+### Documentation
 
 - [Architecture](https://github.com/oltdaniel/clap/blob/master/doc/architecture.md)
 - [Instructions](https://github.com/oltdaniel/clap/blob/master/doc/instructions.md)

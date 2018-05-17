@@ -25,6 +25,15 @@ int compiler_run(char* m, char* buffer) {
   // Store how many labels are allocated
   uint16_t labelss = 10;
 
+	// Store the temporary missing labels
+	struct label_s* labels_tmp = hmalloc(sizeof(struct label_s) * 10);
+
+	// Store how many temporary labels have been stored
+	uint16_t labels_tmpc = 0;
+
+	// Store how many temporary labels are allocated
+	uint16_t labels_tmps = 10;
+
   // Loop through the buffer
   while(1) {
     // Read next char of buffer
@@ -70,7 +79,7 @@ int compiler_run(char* m, char* buffer) {
       else if(strcmp(lab, "var") == 0) labelt = LAB_VAR;
 
       // Store the labels
-      compiler_label(m, buffer, &current, &ccurrent, labelt, labels, &labelsc);
+      compiler_label(m, buffer, &current, &ccurrent, labelt, labels, &labelsc, labels_tmp, labels_tmpc);
 
       // Check for reaming labels list space
       if(labelsc >= labelss) {
@@ -130,14 +139,14 @@ int compiler_run(char* m, char* buffer) {
     m[ccurrent++] = inst;
 
     // Read parameters
-    compiler_parameters(m, buffer, &current, &ccurrent, inst, labels, labelsc);
+    compiler_parameters(m, buffer, &current, &ccurrent, inst, labels, labelsc, labels_tmp, &labels_tmpc);
   }
 
   // Return code position
   return ccurrent;
 }
 
-void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, uint8_t inst, struct label_s* labels, uint16_t labelsc) {
+void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, uint8_t inst, struct label_s* labels, uint16_t labelsc, struct label_s* labels_tmp, uint16_t* labels_tmpc) {
   // Ingore unknown instructions
   if(inst == 0) return;
 
@@ -299,16 +308,16 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
   }
 
   // Store parameter 1 in the memory
-  compiler_store_parameter(m, ccurrent, parameter_one, parameter_onet, labels, labelsc);
+  compiler_store_parameter(m, ccurrent, parameter_one, parameter_onet, labels, labelsc, labels_tmp, labels_tmpc);
 
   // Check if parameter 2 exists
   if(parameter_two != NULL) {
     // Store parameter 2 in the memory
-    compiler_store_parameter(m, ccurrent, parameter_two, parameter_twot, labels, labelsc);
+    compiler_store_parameter(m, ccurrent, parameter_two, parameter_twot, labels, labelsc, labels_tmp, labels_tmpc);
   }
 }
 
-void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, uint8_t parametert, struct label_s* labels, uint16_t labelsc) {
+void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, uint8_t parametert, struct label_s* labels, uint16_t labelsc, struct label_s* labels_tmp, uint16_t* labels_tmpc) {
   // Declare some remember variables
   // Remember pointer to allocated parameter content memory
   void* parameterc = NULL;
@@ -385,7 +394,7 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, uint
     struct label_s* labelp = NULL;
 
     // Loop through exisiting labels
-    for(uint8_t i = 0; i < labelsc; i++) {
+    for(uint16_t i = 0; i < labelsc; i++) {
       // Get current label
       labelp = &labels[i];
 
@@ -413,11 +422,24 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, uint
 
     // Check if label address is not assigned
     if(parameterc == NULL) {
-      // Print error message
-      printf("The label `%s` could not be found.\n", parameter);
+      // Get next element in temporary labels
+			struct label_s* label = &labels_tmp[(*labels_tmpc)++];
 
-      // Exit with error code
-      exit(EX_FAL);
+			// Assign name
+			label->name = parameter;
+
+			// Assign address (+1 header offset)
+			label->address = *ccurrent + 1;
+
+			// Allocate space for address
+			// - keep empty for later assignment
+			parameterc = hmalloc(4);
+
+			// Update parameter length
+			parametercl = 4;
+
+			// Update parameter type
+			parametert = PAR_ADDRESS;
     }
   }
 
@@ -431,7 +453,7 @@ void compiler_store_parameter(char* m, uint32_t* ccurrent, char* parameter, uint
   *ccurrent += parametercl;
 }
 
-void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, uint8_t labt, struct label_s* labels, uint16_t* labelsc) {
+void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent, uint8_t labt, struct label_s* labels, uint16_t* labelsc, struct label_s* labels_tmp, uint16_t labels_tmpc) {
   // Ignore unknown label
   if(labt == LAB_UNKNOWN) return;
 
@@ -514,6 +536,24 @@ void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent
 
     // Update address parameter
     labelp->address = *ccurrent;
+
+		// Store current temporary label
+		struct label_s* labels_tmpp = NULL;
+
+		// Update missing labels
+		for(uint16_t i = 0; i < labels_tmpc; i++) {
+			// Get current temporary label
+			labels_tmpp = &labels_tmp[i];
+
+			// Compare label name
+			if(strcmp(labels_tmpp->name, parameter) == 0) {
+				// Update memory
+				memcpy(m + labels_tmpp->address, ccurrent, 4);
+
+				// Update code memory position
+				*ccurrent += 4;
+			}
+		}
 
   // Check for var label
   } else if(labt == LAB_VAR) {

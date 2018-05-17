@@ -58,8 +58,8 @@ struct label_s {
 };
 
 int compiler_run(char*, char*);
-void compiler_parameters(char*, char*, uint32_t*, uint32_t*, uint8_t, struct label_s*, uint16_t);
-void compiler_store_parameter(char*, uint32_t*, char*, uint8_t, struct label_s*, uint16_t);
-void compiler_label(char*, char*, uint32_t*, uint32_t*, uint8_t, struct label_s*, uint16_t*);
+void compiler_parameters(char*, char*, uint32_t*, uint32_t*, uint8_t, struct label_s*, uint16_t, struct label_s*, uint16_t*);
+void compiler_store_parameter(char*, uint32_t*, char*, uint8_t, struct label_s*, uint16_t, struct label_s*, uint16_t*);
+void compiler_label(char*, char*, uint32_t*, uint32_t*, uint8_t, struct label_s*, uint16_t*, struct label_s*, uint16_t);
 
 #endif
