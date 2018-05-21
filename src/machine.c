@@ -89,6 +89,8 @@ void machine_step(struct machine_s* m) {
     case INS_MOVE:
     case INS_SUBI:
     case INS_ADDI:
+    case INS_MULI:
+    case INS_DIVI:
       // Get first parameter type
       ponet = m->memory[m->ip++];
 
@@ -124,6 +126,8 @@ void machine_step(struct machine_s* m) {
     case INS_MOVE:
     case INS_SUBI:
     case INS_ADDI:
+    case INS_MULI:
+    case INS_DIVI:
       // Get second parameter type
       ptwot = m->memory[m->ip++];
 
@@ -174,6 +178,8 @@ void machine_step(struct machine_s* m) {
     case INS_MOVE:
     case INS_SUBI:
     case INS_ADDI:
+    case INS_MULI:
+    case INS_DIVI:
       // Get value depending on parameter type
       if(ptwot == PAR_REGISTER) {
         // Get value from register
@@ -290,6 +296,48 @@ void machine_step(struct machine_s* m) {
 
         // Add both numbers
         ponev += ptwov;
+
+        // Copy result to memory
+        memcpy(m->memory + target, &ponev, 8);
+      }
+      break;
+
+    case INS_MULI:
+      // Muliply value depending on first parameter
+      if(ponet == PAR_REGISTER) {
+        // Multply with register
+        m->registers[ponev] *= ptwov;
+
+      } else if(ponet == PAR_ADDRESS) {
+        // Store target
+        uint32_t target = ponev;
+
+        // Get value from first parameter
+        memcpy(&ponev, m->memory + ponev, 8);
+
+        // Multiply both numbers
+        ponev *= ptwov;
+
+        // Copy result to memory
+        memcpy(m->memory + target, &ponev, 8);
+      }
+      break;
+
+    case INS_DIVI:
+      // Divide value depending on first parameter
+      if(ponet == PAR_REGISTER) {
+        // Divide with register
+        m->registers[ponev] /= ptwov;
+
+      } else if(ponet == PAR_ADDRESS) {
+        // Store target
+        uint32_t target = ponev;
+
+        // Get value from first parameter
+        memcpy(&ponev, m->memory + ponev, 8);
+
+        // Divide both numbers
+        ponev /= ptwov;
 
         // Copy result to memory
         memcpy(m->memory + target, &ponev, 8);

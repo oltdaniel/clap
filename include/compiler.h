@@ -32,6 +32,8 @@ enum {
 
   INS_SUBI,
   INS_ADDI,
+  INS_MULI,
+  INS_DIVI,
 };
 
 // Parameter type ids

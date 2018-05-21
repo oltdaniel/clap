@@ -90,5 +90,7 @@ a space if they are used. _(The `ID` is the number that can be used in the bytec
 | 11 | `move` | address/register, address/register/value | Moves the value of the second parameter to the first parameter |
 | 12 | `subi` | address/register, address/register/value | Subtracts the value of both parameters and stores it in the first parameter |
 | 13 | `addi` | address/register, address/register/value | Adds the value of both parameters and stores it in the first parameter |
+| 14 | `muli` | address/register, address/register/value | Multiplies the first parameter with the second parameter and stores it in the first parameter |
+| 15 | `divi` | address/register, address/register/value | Divides the first parameter with the second one and stores it in the first parameter |
 
 ###### **TODO**: Add more instructions

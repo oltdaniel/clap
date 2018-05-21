@@ -125,6 +125,8 @@ int compiler_run(char* m, char* buffer) {
     else if(strcmp(ins, "move") == 0) inst = INS_MOVE;
     else if(strcmp(ins, "subi") == 0) inst = INS_SUBI;
     else if(strcmp(ins, "addi") == 0) inst = INS_ADDI;
+    else if(strcmp(ins, "muli") == 0) inst = INS_MULI;
+    else if(strcmp(ins, "divi") == 0) inst = INS_DIVI;
 
     // Check for unknown instruction
     if(inst == INS_UNKNOWN) {
@@ -221,7 +223,9 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
      || (inst == INS_MOVZ && parameter != 1)
      || (inst == INS_MOVE && parameter != 2)
      || (inst == INS_SUBI && parameter != 2)
-     || (inst == INS_ADDI && parameter != 2)) {
+     || (inst == INS_ADDI && parameter != 2)
+     || (inst == INS_MULI && parameter != 2)
+     || (inst == INS_DIVI && parameter != 2)) {
     // Print error message
     printf("Wrong number of parameters for instruction.\n");
 
@@ -299,7 +303,20 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
                        && (parameter_twot == PAR_ADDRESS
                            || parameter_twot == PAR_REGISTER
                            || parameter_twot == PAR_VALUE))
-  ) {
+    && // Validate muli instruction parameters
+    !(inst == INS_MULI && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_VALUE)
+                       && (parameter_twot == PAR_ADDRESS
+                           || parameter_twot == PAR_REGISTER
+                           || parameter_twot == PAR_VALUE))
+    && // Validate divi instruction parameters
+    !(inst == INS_DIVI && (parameter_onet == PAR_ADDRESS
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_VALUE)
+                       && (parameter_twot == PAR_ADDRESS
+                           || parameter_twot == PAR_REGISTER
+                           || parameter_twot == PAR_VALUE))) {
     // Print error message
     printf("Wrong parameter types given.\n");
 
