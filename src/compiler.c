@@ -258,10 +258,12 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
   if(
     // Validate allo instruction parameters
     !(inst == INS_ALLO && (parameter_onet == PAR_ADDRESS
-                           || parameter_onet == PAR_REGISTER)
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_NAME)
                        && (parameter_twot == PAR_ADDRESS
                            || parameter_twot == PAR_REGISTER
-                           || parameter_twot == PAR_VALUE))
+                           || parameter_twot == PAR_VALUE
+                           || parameter_twot == PAR_NAME))
     && // Validate pope instruction parameters
     !(inst == INS_POPE && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
@@ -269,7 +271,8 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
     && // Validate push instruction parameters
     !(inst == INS_PUSH && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
-                           || parameter_onet == PAR_VALUE))
+                           || parameter_onet == PAR_VALUE
+                           || parameter_onet == PAR_NAME))
     && // Validate jumz instruction parameters
     !(inst == INS_JUMZ && (parameter_onet == PAR_NAME
                            || parameter_onet == PAR_ADDRESS))
@@ -279,44 +282,56 @@ void compiler_parameters(char* m, char* buffer, uint32_t* current, uint32_t* ccu
     && // Validate cmpz instruction parameters
     !(inst == INS_CMPZ && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
-                           || parameter_onet == PAR_VALUE))
+                           || parameter_onet == PAR_VALUE
+                           || parameter_onet == PAR_NAME))
     && // Validate movz instruction parameters
     !(inst == INS_MOVZ && (parameter_onet == PAR_ADDRESS
-                           || parameter_onet == PAR_REGISTER))
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_NAME))
     && // Validate move instruction parameters
     !(inst == INS_MOVE && (parameter_onet == PAR_ADDRESS
-                           || parameter_onet == PAR_REGISTER)
+                           || parameter_onet == PAR_REGISTER
+                           || parameter_onet == PAR_NAME)
                        && (parameter_twot == PAR_ADDRESS
                            || parameter_twot == PAR_REGISTER
-                           || parameter_twot == PAR_VALUE))
+                           || parameter_twot == PAR_VALUE
+                           || parameter_twot == PAR_NAME))
     && // Validate subi instruction parameters
     !(inst == INS_SUBI && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
-                           || parameter_onet == PAR_VALUE)
+                           || parameter_onet == PAR_VALUE
+                           || parameter_onet == PAR_NAME)
                        && (parameter_twot == PAR_ADDRESS
                            || parameter_twot == PAR_REGISTER
-                           || parameter_twot == PAR_VALUE))
+                           || parameter_twot == PAR_VALUE
+                           || parameter_twot == PAR_NAME))
     && // Validate addi instruction parameters
     !(inst == INS_ADDI && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
-                           || parameter_onet == PAR_VALUE)
+                           || parameter_onet == PAR_VALUE
+                           || parameter_onet == PAR_NAME)
                        && (parameter_twot == PAR_ADDRESS
                            || parameter_twot == PAR_REGISTER
-                           || parameter_twot == PAR_VALUE))
+                           || parameter_twot == PAR_VALUE
+                           || parameter_twot == PAR_NAME))
     && // Validate muli instruction parameters
     !(inst == INS_MULI && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
-                           || parameter_onet == PAR_VALUE)
+                           || parameter_onet == PAR_VALUE
+                           || parameter_onet == PAR_NAME)
                        && (parameter_twot == PAR_ADDRESS
                            || parameter_twot == PAR_REGISTER
-                           || parameter_twot == PAR_VALUE))
+                           || parameter_twot == PAR_VALUE
+                           || parameter_twot == PAR_NAME))
     && // Validate divi instruction parameters
     !(inst == INS_DIVI && (parameter_onet == PAR_ADDRESS
                            || parameter_onet == PAR_REGISTER
-                           || parameter_onet == PAR_VALUE)
+                           || parameter_onet == PAR_VALUE
+                           || parameter_onet == PAR_NAME)
                        && (parameter_twot == PAR_ADDRESS
                            || parameter_twot == PAR_REGISTER
-                           || parameter_twot == PAR_VALUE))) {
+                           || parameter_twot == PAR_VALUE
+                           || parameter_twot == PAR_NAME))) {
     // Print error message
     printf("Wrong parameter types given.\n");
 
@@ -524,6 +539,8 @@ void compiler_label(char* m, char* buffer, uint32_t* current, uint32_t* ccurrent
   ) {
     // Print error message
     printf("Wrong label parameter types given.\n");
+
+    printf(parameter);
 
     // Exit with error code
     exit(EX_FAL);

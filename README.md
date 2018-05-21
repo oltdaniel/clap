@@ -38,6 +38,29 @@ $ bin/clap run examples/math.asm
 $ make clean
 ```
 
+#### Example
+
+```assembly
+; Jump over the variable space
+jump main
+
+; Define the address label math
+.nam math
+
+; Set 64bit of the memory to 0
+.var 0
+
+; Define the main label
+.nam main
+
+; Move 12 to the register 0
+move r00 #12
+
+; Add the value of register 0
+;to the variable
+addi math r00
+```
+
 ## About
 
 The clap machine is an `64bit` based virtual machine. It has `20` registers, an

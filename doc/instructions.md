@@ -23,6 +23,8 @@ An name is just an written word without any special characters to be recognized
 by the compiler. The only requirement is, that it needs to be alphanumeric to
 avoid compiler errors. It will be translated to an address in the memory. **Example**: `nameThis`
 
+###### **NOTE: Do not start the label with `r` since this indicates an register**
+
 ##### value
 
 An value is recognized by an `#` followed by the actual value. This value needs
