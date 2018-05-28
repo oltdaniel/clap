@@ -84,15 +84,16 @@ a space if they are used. _(The `ID` is the number that can be used in the bytec
 | 3 | `allo` | address/register, address/register/value | Allocates x bytes (second parameter) and stores the address into the first parameter |
 | 4 | `pope` | address/register | Pops an element from the stack into the destination |
 | 5 | `push` | address/register/value | Push an element to the stack |
-| 6 | `jumz` | name | Jumps if the zero flag is activated |
-| 7 | `jump` | name | Jumps to an specified label |
-| 8 | `cmpz` | address/register/value | Checks if the value of the parameter is zero, if true set the zero flag |
-| 9 | `flaz` | _none_ | Clears all flags to the default state |
-| 10 | `movz` | address/register | Clears the first parameter value |
-| 11 | `move` | address/register, address/register/value | Moves the value of the second parameter to the first parameter |
-| 12 | `subi` | address/register, address/register/value | Subtracts the value of both parameters and stores it in the first parameter |
-| 13 | `addi` | address/register, address/register/value | Adds the value of both parameters and stores it in the first parameter |
-| 14 | `muli` | address/register, address/register/value | Multiplies the first parameter with the second parameter and stores it in the first parameter |
-| 15 | `divi` | address/register, address/register/value | Divides the first parameter with the second one and stores it in the first parameter |
+| 6 | `junz` | name | Jumps if zero flag is not activated |
+| 7 | `jumz` | name | Jumps if the zero flag is activated |
+| 8 | `jump` | name | Jumps to an specified label |
+| 9 | `cmpz` | address/register/value | Checks if the value of the parameter is zero, if true set the zero flag |
+| 10 | `flaz` | _none_ | Clears all flags to the default state |
+| 11 | `movz` | register | Clears the first parameter value |
+| 12 | `move` | address/register, address/register/value | Moves the value of the second parameter to the first parameter |
+| 13 | `subi` | address/register, address/register/value | Subtracts the value of both parameters and stores it in the first parameter |
+| 14 | `addi` | address/register, address/register/value | Adds the value of both parameters and stores it in the first parameter |
+| 15 | `muli` | address/register, address/register/value | Multiplies the first parameter with the second parameter and stores it in the first parameter |
+| 16 | `divi` | address/register, address/register/value | Divides the first parameter with the second one and stores it in the first parameter |
 
 ###### **TODO**: Add more instructions

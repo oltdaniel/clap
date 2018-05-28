@@ -21,6 +21,7 @@ enum {
   INS_PUSH,
 
   INS_JUMZ,
+  INS_JUNZ,
   INS_JUMP,
 
   INS_CMPZ,

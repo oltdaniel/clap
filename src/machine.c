@@ -242,9 +242,42 @@ void machine_step(struct machine_s* m) {
       }
       break;
 
+    case INS_JUMZ:
+      // Check if flag is set
+      if(((m->flags >> FLAG_ZERO) & 1U) == 1) {
+        // Update instruction pointer
+        m->ip = ponev;
+      }
+      break;
+
+    case INS_JUNZ:
+      // CHeck if flag is set
+      if(((m->flags >> FLAG_ZERO) & 1U) == 0) {
+        // Update instruction pointer
+        m->ip = ponev;
+      }
+      break;
+
     case INS_JUMP:
       // Change instruction pointer position to given position
       m->ip = ponev;
+      break;
+
+    case INS_MOVZ:
+      // Set value behind first parameter to zero
+      if(ponet == PAR_REGISTER) {
+        // Set memory to 0
+        memset(&m->registers[ponev], 0, 8);
+
+      }
+      break;
+
+    case INS_CMPZ:
+      // Chekc if first parametrer value is zero
+      if(ponev == 0) {
+        // Set zero flag
+        m->flags |= 1UL << FLAG_ZERO;
+      }
       break;
 
     case INS_MOVE:
@@ -352,6 +385,12 @@ void machine_step(struct machine_s* m) {
 
   // Dump memory
   hex_dump("memory", m->memory, MEMORY_SIZE);
+
+  // Print flags
+  printf("Overflow Flag: %d\n", (m->flags >> FLAG_OVERFLOW) & 1U);
+  printf("Parity Flag: %d\n",   (m->flags >> FLAG_PARITY)   & 1U);
+  printf("Zero Flag: %d\n",     (m->flags >> FLAG_ZERO)     & 1U);
+  printf("Negative Flag: %d\n", (m->flags >> FLAG_NEGATIVE) & 1U);
 }
 
 void machine_run(struct machine_s* m) {

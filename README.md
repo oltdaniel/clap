@@ -57,7 +57,7 @@ jump main
 move r00 #12
 
 ; Add the value of register 0
-;to the variable
+; to the variable
 addi math r00
 ```
 
